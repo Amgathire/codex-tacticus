@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>COGITATEUR DE RECRUTEMENT - W&G</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles spécifiques au Builder */
+        .builder-container { display: flex; gap: 20px; height: 90vh; }
+        .sidebar { width: 300px; background: rgba(0,20,0,0.8); padding: 20px; border-right: 2px solid #33ff00; overflow-y: auto; }
+        .main-panel { flex-grow: 1; padding: 20px; overflow-y: auto; position: relative; }
+        
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.3); padding: 5px; }
+        .stat-btn { background: #1a5c00; color: #33ff00; border: 1px solid #33ff00; cursor: pointer; width: 30px; }
+        .stat-val { font-size: 1.2em; font-weight: bold; width: 40px; text-align: center; }
+        
+        .xp-counter { 
+            position: sticky; top: 0; background: black; border-bottom: 2px solid #33ff00; 
+            padding: 10px; font-size: 1.2em; color: #d4af37; z-index: 100; text-align: right;
+        }
+        
+        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #1a5c00; padding-bottom: 10px; }
+        .tab-btn { background: none; border: 1px solid #1a5c00; color: #1a5c00; padding: 10px; cursor: pointer; flex-grow: 1; }
+        .tab-btn.active { background: #1a5c00; color: #33ff00; border-color: #33ff00; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="hud-screen">
+    <div class="builder-container">
+        <div class="sidebar">
+            <h2 style="color: #d4af37; border-bottom: 1px dashed #d4af37;">FICHE AGENT</h2>
+            <div id="summary-archetype">Archétype: <span style="color:#aaa;">Aucun</span></div>
+            <div id="summary-tier">Tier: <span style="color:#aaa;">-</span></div>
+            <div id="summary-species">Espèce: <span style="color:#aaa;">Humain</span></div>
+            
+            <h3 style="margin-top:20px;">STATS DÉRIVÉES</h3>
+            <div>PV (Wounds): <span id="deriv-w" class="highlight">0</span></div>
+            <div>Choc (Shock): <span id="deriv-s" class="highlight">0</span></div>
+            <div>Défense: <span id="deriv-def" class="highlight">0</span></div>
+            <div>Résilience: <span id="deriv-res" class="highlight">0</span></div>
+            <div>Influence: <span id="deriv-inf" class="highlight">0</span></div>
+            <div>Richesse: <span id="deriv-wealth" class="highlight">0</span></div>
+        </div>
+
+        <div class="main-panel">
+            <div class="xp-counter">
+                XP RESTANT: <span id="xp-remaining">0</span> / <span id="xp-total">0</span>
+            </div>
+
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('tab-setup')">1. BASE</button>
+                <button class="tab-btn" onclick="switchTab('tab-attrs')">2. ATTRIBUTS</button>
+                <button class="tab-btn" onclick="switchTab('tab-skills')">3. COMPÉTENCES</button>
+                <button class="tab-btn" onclick="switchTab('tab-export')">4. EXPORT</button>
+            </div>
+
+            <div id="tab-setup" class="tab-content active">
+                <h3>CONFIGURATION DE LA CAMPAGNE</h3>
+                <div class="stat-row">
+                    <label>Niveau de Jeu (Tier):</label>
+                    <select id="tier-select" onchange="updateTier()" style="background:black; color:#33ff00; border:1px solid #1a5c00; padding:5px;">
+                        <option value="1">Tier 1 (Survivants) - 100 XP</option>
+                        <option value="2">Tier 2 (Vétérans) - 200 XP</option>
+                        <option value="3">Tier 3 (Héros) - 300 XP</option>
+                        <option value="4">Tier 4 (Légendes) - 400 XP</option>
+                    </select>
+                </div>
+                <div class="stat-row">
+                    <label>Archétype:</label>
+                    <select id="archetype-select" onchange="setArchetype()" style="background:black; color:#33ff00; border:1px solid #1a5c00; padding:5px;">
+                        <option value="">-- Choisir --</option>
+                        </select>
+                </div>
+                <div id="archetype-desc" style="margin-top:10px; font-style:italic; color:#888;"></div>
+            </div>
+
+            <div id="tab-attrs" class="tab-content">
+                <h3>ATTRIBUTS PRIMAIRES</h3>
+                <div id="attributes-list">
+                    </div>
+            </div>
+
+            <div id="tab-skills" class="tab-content">
+                <h3>COMPÉTENCES</h3>
+                <div id="skills-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    </div>
+            </div>
+
+            <div id="tab-export" class="tab-content">
+                <h3>CODE NOOSPHÉRIQUE (JSON)</h3>
+                <textarea id="export-area" style="width:100%; height:200px; background:black; color:#33ff00; border:1px solid #1a5c00;"></textarea>
+                <button class="btn-tactical" onclick="generateExport()">GÉNÉRER LA FICHE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="builder-script.js"></script>
+</body>
+</html>

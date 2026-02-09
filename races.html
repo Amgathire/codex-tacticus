@@ -2,206 +2,540 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Protocole Création - Wrath & Glory</title>
+    <title>COGITATEUR DE RECRUTEMENT - W&G</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* --- STYLES EXISTANTS --- */
-        .meta-badge {
-            font-size: 0.7em;
-            padding: 2px 5px;
-            border-radius: 3px;
-            margin-right: 5px;
-            font-weight: bold;
-            display: inline-block;
-        }
-        .tier-badge { background-color: #33ff00; color: black; }
-        .source-badge { background-color: #002200; color: #33ff00; border: 1px solid #33ff00; }
+        /* --- CSS SPÉCIFIQUE AU BUILDER --- */
         
-        .archetype-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1a5c00;
-            padding: 10px 0;
-            transition: background 0.2s;
-        }
-        .archetype-row:hover { background: rgba(51, 255, 0, 0.05); }
-        
-        .archetype-info { flex-grow: 1; padding: 0 15px; }
-        .archetype-btn {
-            border: 1px solid #33ff00;
-            padding: 5px 10px;
-            text-decoration: none;
-            color: #33ff00;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 0.8em;
-            transition: 0.3s;
-        }
-        .archetype-btn:hover { background: #33ff00; color: black; box-shadow: 0 0 10px #33ff00; }
+        .phase-container { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .phase-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- NOUVEAUX STYLES : SÉPARATEUR & BANNIÈRES (BAS DE PAGE) --- */
-        .tech-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 50px 0 30px 0;
-            color: #1a5c00;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            letter-spacing: 2px;
+        /* PHASE 2 : LISTE ARCHETYPES */
+        .arch-list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
-        .tech-divider::before, .tech-divider::after {
-            content: ''; flex: 1; border-bottom: 2px dashed #1a5c00;
-        }
-        .tech-divider::before { margin-right: 15px; }
-        .tech-divider::after { margin-left: 15px; }
-
-        .wide-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0, 20, 0, 0.6);
+        .arch-card {
+            background: rgba(0, 20, 0, 0.8);
             border: 1px solid #1a5c00;
-            padding: 20px 30px;
-            margin-bottom: 20px;
+            padding: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.3s;
             position: relative;
             overflow: hidden;
         }
-        .wide-banner:hover {
-            background: rgba(0, 40, 0, 0.8);
+        .arch-card:hover {
             border-color: #33ff00;
+            background: #001a00;
             box-shadow: 0 0 15px rgba(51, 255, 0, 0.2);
-            transform: translateY(-2px);
         }
-        /* Barre décorative latérale */
-        .wide-banner::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-            width: 5px; background: #1a5c00; transition: 0.3s;
+        .arch-tier-badge {
+            position: absolute; top: 0; right: 0;
+            background: #33ff00; color: #000;
+            font-weight: bold; padding: 2px 8px; font-size: 0.8em;
         }
-        .wide-banner:hover::before { background: #33ff00; }
 
-        .banner-content h3 { margin: 0; font-size: 1.5em; color: #d4af37; }
-        .banner-content p { margin: 5px 0 0 0; color: #aaa; font-size: 0.9em; }
+        /* PHASE 3 : BUILDER LAYOUT */
+        .builder-layout { display: flex; gap: 20px; height: 75vh; margin-top: 10px; }
+        
+        .sidebar { 
+            width: 280px; 
+            background: rgba(0, 15, 0, 0.9); 
+            border: 2px solid #1a5c00; 
+            padding: 15px; 
+            overflow-y: auto; 
+            font-size: 0.9em;
+        }
 
-        .status-indicator {
-            font-size: 0.8em; color: #1a5c00;
-            border: 1px solid #1a5c00; padding: 2px 8px; transition: 0.3s;
+        .main-view { 
+            flex-grow: 1; 
+            background: rgba(0, 5, 0, 0.6); 
+            border: 1px solid #33ff00; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
         }
-        .wide-banner:hover .status-indicator {
-            color: #33ff00; border-color: #33ff00; background: black;
+
+        .xp-header {
+            background: black;
+            border: 1px solid #33ff00;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Courier New', monospace;
         }
+
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #1a5c00; }
+        .tab-btn {
+            background: #001000;
+            color: #1a5c00;
+            border: 1px solid #1a5c00;
+            border-bottom: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            background: #1a5c00;
+            color: #33ff00;
+            border-color: #33ff00;
+            padding-bottom: 12px;
+            margin-bottom: -1px;
+        }
+        .tab-content { display: none; height: 100%; overflow-y: auto; }
+        .tab-content.active { display: block; }
+
+        .stat-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 8px 0; border-bottom: 1px dotted #1a5c00; 
+        }
+        .ctrl-btn {
+            background: black; color: #33ff00; border: 1px solid #33ff00;
+            width: 25px; height: 25px; cursor: pointer;
+        }
+        .ctrl-btn:hover { background: #33ff00; color: black; }
+        
+        .inv-item { 
+            border: 1px solid #1a5c00; padding: 5px; margin-bottom: 5px; 
+            display: flex; justify-content: space-between; 
+            background: rgba(0,0,0,0.5);
+        }
+
+        /* BOUTONS DE FILTRE ARMURERIE */
+        .gear-filters { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+        .gear-cat-btn {
+            background: black; border: 1px solid #1a5c00; color: #1a5c00;
+            padding: 5px 10px; font-size: 0.8em; cursor: pointer; flex-grow: 1;
+            font-family: 'Courier New', monospace; font-weight: bold;
+        }
+        .gear-cat-btn.active { background: #1a5c00; color: #33ff00; border-color: #33ff00; }
+        .gear-cat-btn:hover { border-color: #33ff00; color: #33ff00; }
+
     </style>
 </head>
-<body>
+<body class="hud-screen">
+    
     <nav>
         <a href="index.html">Terminal</a>
-        <a href="races.html" class="active">Création de Personnage</a>
-        <a href="lore.html">Archives</a>
+        <a href="races.html" class="active">Création</a>
+        <a href="armurerie.html">Armurerie</a>
         <a href="codex.html">CODEX</a>
-        <a href="carte.html">Cartographie</a>
     </nav>
 
     <div class="screen-content">
         <div class="container">
-            <h1>+++ SÉLECTEUR D'ARCHÉTYPE +++</h1>
-            <p>Initialisation des protocoles Wrath & Glory (v2.1 + Apocrypha).</p>
-            <p style="font-size: 0.9em; color: #aaa;">Veuillez sélectionner une Faction Majeure pour accéder aux données de recrutement.</p>
 
-            <div class="grid">
-                <div class="sub-faction-card" onclick="openFaction('imperium')">
-                    <div class="sub-faction-icon">✠</div>
-                    <h3>IMPERIUM</h3>
-                    <p>Le Trône d'Or.</p>
+            <div id="phase-1" class="phase-container active">
+                <div class="top-hud-bar">
+                    <div style="text-align:center; width:100%; border: 1px solid #33ff00; background: rgba(51, 255, 0, 0.1);">
+                        <span style="font-size: 1.5em; font-weight:bold;">INITIALISATION DU PROTOCOLE GÉNÉTIQUE</span>
+                    </div>
                 </div>
-                <div class="sub-faction-card" onclick="openFaction('chaos')">
-                    <div class="sub-faction-icon">☠</div>
-                    <h3>CHAOS</h3>
-                    <p>Les Dieux Sombres.</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('aeldari')">
-                    <div class="sub-faction-icon">👁</div>
-                    <h3>AELDARI</h3>
-                    <p>Asuryani & Drukhari.</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('orks')">
-                    <div class="sub-faction-icon">V</div>
-                    <h3>ORKS</h3>
-                    <p>WAAAGH!</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('tau')">
-                    <div class="sub-faction-icon">◎</div>
-                    <h3>EMPIRE T'AU</h3>
-                    <p>Le Bien Suprême.</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('necrons')">
-                    <div class="sub-faction-icon">💀</div>
-                    <h3>NECRONS</h3>
-                    <p>Dynasties Éveillées.</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('scum')">
-                    <div class="sub-faction-icon">⛓</div>
-                    <h3>MARGINAUX</h3>
-                    <p>Abhumains & Parias.</p>
-                </div>
-                <div class="sub-faction-card" onclick="openFaction('tyranids')">
-                    <div class="sub-faction-icon">🐜</div>
-                    <h3>TYRANIDES</h3>
-                    <p>L'Ombre dans le Warp.</p>
+                <p style="text-align:center; color:#888;">Sélectionnez l'allégeance principale de l'agent.</p>
+
+                <div class="grid">
+                    <div class="sub-faction-card" onclick="goToPhase2('imperium')"> <div class="sub-faction-icon">✠</div> <h3>IMPERIUM</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('chaos')"> <div class="sub-faction-icon">☠</div> <h3>CHAOS</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('aeldari')"> <div class="sub-faction-icon">👁</div> <h3>AELDARI</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('orks')"> <div class="sub-faction-icon">V</div> <h3>ORKS</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('tau')"> <div class="sub-faction-icon">◎</div> <h3>EMPIRE T'AU</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('necrons')"> <div class="sub-faction-icon">💀</div> <h3>NECRONS</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('scum')"> <div class="sub-faction-icon">⛓</div> <h3>MARGINAUX</h3> </div>
+                    <div class="sub-faction-card" onclick="goToPhase2('tyranids')"> <div class="sub-faction-icon">🐜</div> <h3>TYRANIDES</h3> </div>
                 </div>
             </div>
 
-            <div class="tech-divider">
-                <span>+++ REQUISITIONS LOGISTIQUES +++</span>
+            <div id="phase-2" class="phase-container">
+                <button class="btn-tactical" onclick="goToPhase1()"> &lt; RETOUR FACTIONS</button>
+                <h2 id="faction-title" style="color:#d4af37; border-bottom:2px solid #d4af37; margin-top:10px;">TITRE FACTION</h2>
+                <div id="archetype-list" class="arch-list-container"></div>
             </div>
 
-            <div class="equipment-section">
-                <div class="wide-banner" onclick="window.location.href='armurerie.html'">
-                    <svg class="icon-svg" viewBox="0 0 24 24" style="margin: 0; width: 50px; height: 50px;">
-                        <path d="M19.5 5.5L14 11l-2-2 5.5-5.5c.8-.8 2.3-.6 3.1.2.9.8 1.1 2.3.2 3.1zM3 13.5l2.5 2.5 4.5-4.5-2.5-2.5-4.5 4.5zm8 3l1.5-1.5 6 6-4 4-6-6 1.5-1.5z"/> 
-                        <path d="M9 7L7 9l5 5 2-2z"/>
-                    </svg>
-                    
-                    <div class="banner-content" style="flex-grow: 1; padding-left: 20px;">
-                        <h3>ARMURERIE MUNITORUM</h3>
-                        <p>Accéder aux banques de données d'armement standard et reliques.</p>
+            <div id="phase-3" class="phase-container">
+                <button class="btn-tactical" onclick="goToPhase2(currentFactionKey)"> &lt; CHANGER ARCHÉTYPE</button>
+                
+                <div class="builder-layout">
+                    <div class="sidebar">
+                        <h3 style="color:#33ff00; border-bottom:1px solid #33ff00;">IDENTITÉ</h3>
+                        <div style="margin-bottom:15px;">
+                            <label>Nom :</label>
+                            <input type="text" id="char-name" value="Nouvel Agent" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00;">
+                        </div>
+                        <div><strong>Archétype:</strong> <span id="summ-arch" style="color:#d4af37;">-</span></div>
+                        <div><strong>Tier:</strong> <span id="summ-tier">-</span></div>
+                        <div style="font-size:0.8em; color:#aaa; margin-top:5px;"><strong>Mots-Clés:</strong><br><span id="summ-keywords">-</span></div>
+
+                        <h3 style="color:#33ff00; border-bottom:1px solid #33ff00; margin-top:20px;">STATS DÉRIVÉES</h3>
+                        <div class="stat-row"><span>PV (Wounds)</span> <span id="d-wounds" class="highlight">0</span></div>
+                        <div class="stat-row"><span>Choc (Shock)</span> <span id="d-shock" class="highlight">0</span></div>
+                        <div class="stat-row"><span>Défense</span> <span id="d-def" class="highlight">0</span></div>
+                        <div class="stat-row"><span>Résilience</span> <span id="d-res" class="highlight">0</span></div>
+                        <div class="stat-row"><span>Influence</span> <span id="d-inf" class="highlight">0</span></div>
+                        <div class="stat-row"><span>Richesse</span> <span id="d-wealth" class="highlight">0</span></div>
                     </div>
 
-                    <div class="status-indicator">STATUS: ONLINE</div>
-                </div>
+                    <div class="main-view">
+                        <div class="xp-header">
+                            <span>CAPACITÉ D'EXPÉRIENCE</span>
+                            <span style="font-size:1.4em;">
+                                <span id="xp-spent" style="color:#33ff00;">0</span> / <span id="xp-max" style="color:#d4af37;">0</span> XP
+                            </span>
+                        </div>
 
-                <div class="wide-banner" onclick="window.location.href='vehicules.html'">
-                    <svg class="icon-svg" viewBox="0 0 24 24" style="margin: 0; width: 50px; height: 50px;">
-                        <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65z"/>
-                    </svg>
-                    
-                    <div class="banner-content" style="flex-grow: 1; padding-left: 20px;">
-                        <h3>HANGAR MÉCANIQUE</h3>
-                        <p>Requisition de véhicules lourds, marcheurs et antigrav.</p>
-                    </div>
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="showTab('tab-attrs', this)">ATTRIBUTS</button>
+                            <button class="tab-btn" onclick="showTab('tab-skills', this)">COMPÉTENCES</button>
+                            <button class="tab-btn" onclick="showTab('tab-gear', this)">ARSENAL</button>
+                            <button class="tab-btn" onclick="showTab('tab-export', this)">DONNÉES</button>
+                        </div>
 
-                    <div class="status-indicator">STATUS: ONLINE</div>
-                </div>
-            </div>
-                <div class="terminal-footer">
-                    <span>+++ TERMINUS EST +++</span>
-                    <span>COGITATEUR MUNITORUM // SECTEUR CALIXIS</span>
-                    <span>PENSÉE DU JOUR : "L'ignorance est une bénédiction, mais ne la gaspillez pas."</span>
-                    <span style="font-size: 0.7em; color: #003300;">v2.1.054-Beta // NOOSPHERE LINK: STABLE</span>
-                </div>
-        </div>
+                        <div id="tab-attrs" class="tab-content active">
+                            <h3>ATTRIBUTS PRIMAIRES</h3>
+                            <div id="attrs-container"></div>
+                        </div>
+
+                        <div id="tab-skills" class="tab-content">
+                            <h3>COMPÉTENCES</h3>
+                            <div id="skills-container" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
+                        </div>
+
+                        <div id="tab-gear" class="tab-content">
+                            <div style="display:flex; gap:20px; height:100%;">
+                                <div style="flex:1; border-right:1px solid #1a5c00; padding-right:10px;">
+                                    <h4 style="color:#d4af37;">LOGISTIQUE DISPONIBLE</h4>
+                                    
+                                    <div class="gear-filters">
+                                        <button class="gear-cat-btn active" onclick="filterGear('ALL', this)">TOUT</button>
+                                        <button class="gear-cat-btn" onclick="filterGear('MELEE', this)">MÊLÉE</button>
+                                        <button class="gear-cat-btn" onclick="filterGear('RANGED', this)">DISTANCE</button>
+                                        <button class="gear-cat-btn" onclick="filterGear('ARMOR', this)">ARMURES</button>
+                                        <button class="gear-cat-btn" onclick="filterGear('GEAR', this)">MATÉRIEL</button>
+                                        <button class="gear-cat-btn" onclick="filterGear('CYBER', this)">CYBER</button>
+                                    </div>
+
+                                    <input type="text" id="gear-search" placeholder="Rechercher..." onkeyup="renderGearList()" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:10px;">
+                                    <div id="gear-list" style="height:300px; overflow-y:auto;"></div>
+                                </div>
+                                <div style="flex:1; padding-left:10px;">
+                                    <h4 style="color:#33ff00;">INVENTAIRE</h4>
+                                    <div id="inventory-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+<div id="tab-export" class="tab-content">
+    <h3>CODE NOOSPHÉRIQUE</h3>
+    <p style="color:#888; font-size:0.9em;">Sauvegardez ce fichier pour recharger votre agent plus tard.</p>
+    
+    <textarea id="json-export" style="width:100%; height:200px; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:10px; font-family:monospace;"></textarea>
+    
+    <div style="display:flex; gap:10px;">
+        <button class="btn-tactical" onclick="exportData()" style="flex:1;">ACTUALISER LE CODE</button>
+        <button class="btn-tactical" onclick="downloadFile()" style="flex:1; border-color:#d4af37; color:#d4af37;">TÉLÉCHARGER FICHIER .JSON</button>
     </div>
-
-    <div id="raceModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-btn" id="btnClose">&times;</span>
-            <h2 id="modalTitle">ARCHÉTYPES DISPONIBLES</h2>
-            <div id="modalBody"></div>
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="races-script.js"></script>
+    <script src="armory-script.js"></script>
+
+    <script>
+    const attributesList = ["Force", "Endurance", "Agilité", "Initiative", "Volonté", "Intellect", "Sociabilité"];
+    const skillsList = ["Athlétisme", "Vigilance", "Tir", "Corps à corps", "Furtivité", "Pilotage", "Tech", "Medicae", "Commandement", "Investigation", "Persuasion", "Survie"];
+    const xpAttrCosts = [0, 0, 4, 10, 20, 35, 55, 80, 110, 145, 185, 230, 280];
+    const xpSkillCosts = [0, 0, 2, 6, 12, 20, 30, 42, 56];
+
+    let currentFactionKey = "";
+    let currentGearCat = "ALL"; 
+    let charSheet = {
+        archetypeId: null, tier: 1, xpSpent: 0,
+        attributes: {}, skills: {}, inventory: [], keywords: []
+    };
+
+    attributesList.forEach(a => charSheet.attributes[a] = 1);
+    skillsList.forEach(s => charSheet.skills[s] = 0);
+
+    function showPhase(id) {
+        document.querySelectorAll('.phase-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goToPhase2(fKey) {
+        currentFactionKey = fKey;
+        let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
+        
+        if (!data) { alert("Erreur : Aucun script de données (races-script.js) n'est chargé."); return; }
+        
+        const faction = data[fKey];
+        if(!faction) return;
+
+        document.getElementById('faction-title').innerText = faction.title;
+        const list = document.getElementById('archetype-list');
+        list.innerHTML = "";
+        const sorted = [...faction.units].sort((a,b) => a.tier - b.tier);
+
+        sorted.forEach(u => {
+            let color = u.tier >= 3 ? "#d4af37" : "#33ff00"; 
+            if (u.tier >= 5) color = "#ff3333";
+            list.innerHTML += `
+            <div class="arch-card" onclick="initBuilder('${u.id}')">
+                <span class="arch-tier-badge" style="background:${color}; color:black;">T${u.tier}</span>
+                <h3 style="color:#d4af37; margin-top:10px;">${u.name}</h3>
+                <p style="color:#aaa; font-size:0.9em;">${u.desc}</p>
+                <div style="margin-top:10px; color:#33ff00; font-size:0.8em; text-align:right;">[ SÉLECTIONNER ]</div>
+            </div>`;
+        });
+        showPhase('phase-2');
+    }
+
+    function goToPhase1() { showPhase('phase-1'); }
+
+    // --- FONCTION DE CORRECTION DES MOTS-CLÉS ---
+    function getCorrectKeyword(factionKey) {
+        const mapping = {
+            "ORKS": "ORK",          // "ORKS" devient "ORK" pour l'armurerie
+            "TAU": "T'AU",          // "TAU" devient "T'AU"
+            "AELDARI": "AELDARI",
+            "NECRONS": "NECRONS",
+            "IMPERIUM": "IMPERIUM",
+            "CHAOS": "CHAOS",
+            "SCUM": "SCUM",
+            "TYRANIDS": "TYRANIDS"
+        };
+        return mapping[factionKey] || factionKey;
+    }
+
+    function initBuilder(archId) {
+        let unitData = null;
+        let fKeyFound = "";
+        
+        let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
+        if (!data) return;
+
+        for(const [k, f] of Object.entries(data)) {
+            const u = f.units.find(x => x.id === archId);
+            if(u) { unitData = u; fKeyFound = k.toUpperCase(); break; }
+        }
+        if(!unitData) return;
+
+        // Reset Fiche
+        charSheet.archetypeId = archId;
+        charSheet.tier = unitData.tier;
+        charSheet.xpSpent = 0;
+        charSheet.inventory = [];
+        
+        // --- APPLICATION DES MOTS-CLÉS (CORRIGÉE) ---
+        // On ajoute la version corrigée pour l'armurerie (ex: ORK)
+        charSheet.keywords = [getCorrectKeyword(fKeyFound)];
+        
+        // On ajoute aussi la version brute pour être sûr (ex: ORKS)
+        if(fKeyFound !== getCorrectKeyword(fKeyFound)) {
+            charSheet.keywords.push(fKeyFound);
+        }
+
+        const sId = archId.toLowerCase();
+        if(sId.includes('marine') || sId.includes('tactical')) charSheet.keywords.push('ASTARTES', 'IMPERIUM');
+        if(sId.includes('sister')) charSheet.keywords.push('ADEPTA SORORITAS', 'IMPERIUM');
+        if(sId.includes('ork') || sId.includes('boy')) charSheet.keywords.push('ORK');
+        if(sId.includes('scum') || sId.includes('guard')) charSheet.keywords.push('IMPERIUM', 'SCUM');
+
+        attributesList.forEach(a => charSheet.attributes[a] = 1);
+        skillsList.forEach(s => charSheet.skills[s] = 0);
+
+        document.getElementById('summ-arch').innerText = unitData.name;
+        document.getElementById('summ-tier').innerText = unitData.tier;
+        document.getElementById('xp-max').innerText = unitData.tier * 100;
+        document.getElementById('summ-keywords').innerText = charSheet.keywords.join(", ");
+
+        renderAttributes();
+        renderSkills();
+        
+        // REFRESH TOTAL ARMURERIE
+        currentGearCat = 'ALL';
+        document.querySelectorAll('.gear-cat-btn').forEach(b => b.classList.remove('active'));
+        if(document.querySelector('.gear-cat-btn')) document.querySelector('.gear-cat-btn').classList.add('active');
+        renderGearList(); 
+        
+        calculateStats();
+        showPhase('phase-3');
+    }
+
+    function renderAttributes() {
+        const c = document.getElementById('attrs-container');
+        c.innerHTML = "";
+        attributesList.forEach(attr => {
+            c.innerHTML += `
+            <div class="stat-row">
+                <span style="width:100px;">${attr}</span>
+                <div>
+                    <button class="ctrl-btn" onclick="modAttr('${attr}', -1)">-</button>
+                    <span class="stat-val" style="display:inline-block; width:30px; text-align:center;">${charSheet.attributes[attr]}</span>
+                    <button class="ctrl-btn" onclick="modAttr('${attr}', 1)">+</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    function modAttr(attr, delta) {
+        const oldVal = charSheet.attributes[attr];
+        const newVal = oldVal + delta;
+        if(newVal < 1 || newVal > 12) return;
+        const cost = xpAttrCosts[newVal] - xpAttrCosts[oldVal];
+        if(charSheet.xpSpent + cost > charSheet.tier * 100) { alert("XP Insuffisant !"); return; }
+        charSheet.attributes[attr] = newVal;
+        charSheet.xpSpent += cost;
+        renderAttributes();
+        calculateStats();
+    }
+
+    function renderSkills() {
+        const c = document.getElementById('skills-container');
+        c.innerHTML = "";
+        skillsList.forEach(s => {
+            c.innerHTML += `
+            <div class="stat-row">
+                <span>${s}</span>
+                <div>
+                    <button class="ctrl-btn" onclick="modSkill('${s}', -1)">-</button>
+                    <span class="stat-val" style="display:inline-block; width:30px; text-align:center;">${charSheet.skills[s]}</span>
+                    <button class="ctrl-btn" onclick="modSkill('${s}', 1)">+</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    function modSkill(s, delta) {
+        const oldVal = charSheet.skills[s];
+        const newVal = oldVal + delta;
+        if(newVal < 0 || newVal > 8) return;
+        const cost = xpSkillCosts[newVal] - xpSkillCosts[oldVal];
+        if(charSheet.xpSpent + cost > charSheet.tier * 100) { alert("XP Insuffisant !"); return; }
+        charSheet.skills[s] = newVal;
+        charSheet.xpSpent += cost;
+        renderSkills();
+        calculateStats();
+    }
+
+    // --- FONCTION DE FILTRE PAR CATÉGORIE ---
+    function filterGear(cat, btn) {
+        currentGearCat = cat;
+        document.querySelectorAll('.gear-cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderGearList();
+    }
+
+    function renderGearList() {
+        if (typeof armoryData === 'undefined') { document.getElementById('gear-list').innerHTML = "Erreur: armory-script.js manquant."; return; }
+        
+        const search = document.getElementById('gear-search').value.toLowerCase();
+        const c = document.getElementById('gear-list');
+        c.innerHTML = "";
+
+        armoryData.forEach(item => {
+            const matchesSearch = item.name.toLowerCase().includes(search);
+            
+            // FILTRE CATÉGORIE
+            let matchesCat = false;
+            if (currentGearCat === 'ALL') matchesCat = true;
+            else if (item.type === currentGearCat) matchesCat = true;
+
+            // COMPATIBILITÉ (Mots-clés)
+            let compatible = false;
+            if(item.rarity === 'Commun') compatible = true;
+            if(item.keywords && item.keywords.some(k => charSheet.keywords.includes(k))) compatible = true;
+            if(charSheet.keywords.includes('IMPERIUM') && item.keywords.includes('ORK') && !charSheet.keywords.includes('SCUM')) compatible = false;
+
+            if(matchesSearch && matchesCat && compatible) {
+                c.innerHTML += `
+                <div class="inv-item" style="cursor:pointer;" onclick="addItem('${item.id}')">
+                    <div>
+                        <strong style="color:#d4af37;">${item.name}</strong>
+                        <div style="font-size:0.7em; color:#aaa;">${item.type} | ${item.rarity}</div>
+                    </div>
+                    <div style="color:#33ff00;">+</div>
+                </div>`;
+            }
+        });
+    }
+
+    function addItem(id) {
+        const item = armoryData.find(i => i.id === id);
+        charSheet.inventory.push(item);
+        renderInventory();
+    }
+
+    function renderInventory() {
+        const c = document.getElementById('inventory-list');
+        c.innerHTML = charSheet.inventory.map((item, idx) => `
+            <div class="inv-item">
+                <span>${item.name}</span>
+                <span style="color:red; cursor:pointer;" onclick="remItem(${idx})">[X]</span>
+            </div>
+        `).join('');
+    }
+
+    function remItem(idx) {
+        charSheet.inventory.splice(idx, 1);
+        renderInventory();
+    }
+
+    function calculateStats() {
+        document.getElementById('xp-spent').innerText = charSheet.xpSpent;
+        const T = charSheet.attributes["Endurance"];
+        const Tr = charSheet.tier;
+        document.getElementById('d-wounds').innerText = T + (Tr * 2);
+        document.getElementById('d-shock').innerText = charSheet.attributes["Volonté"] + Tr;
+        document.getElementById('d-def').innerText = Math.max(1, charSheet.attributes["Initiative"] - 1);
+        document.getElementById('d-res').innerText = T + 1; 
+        document.getElementById('d-inf').innerText = Math.max(1, charSheet.attributes["Sociabilité"] - 1);
+        document.getElementById('d-wealth').innerText = Tr;
+    }
+
+    function showTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function exportData() {
+        document.getElementById('json-export').value = JSON.stringify(charSheet, null, 4);
+    }
+    function exportData() {
+        // Met à jour le nom dans l'objet charSheet avant l'export
+        charSheet.name = document.getElementById('char-name').value || "Nouvel Agent";
+        
+        const json = JSON.stringify(charSheet, null, 4);
+        document.getElementById('json-export').value = json;
+    }
+
+    function downloadFile() {
+        // 1. S'assurer que les données sont à jour
+        exportData();
+        
+        // 2. Créer le contenu du fichier
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(charSheet, null, 4));
+        const fileName = (charSheet.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()) + "_fiche.json";
+        
+        // 3. Créer un lien de téléchargement invisible et cliquer dessus
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchorNode); // Requis pour Firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+    </script>
 </body>
 </html>

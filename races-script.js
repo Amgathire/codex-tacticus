@@ -215,11 +215,18 @@ const factionData = {
     }
 };
 
-// --- 1. FONCTION D'OUVERTURE (Avec Tri Automatique) ---
+
 function openFaction(key) {
     const modal = document.getElementById('raceModal');
     const container = document.getElementById('modalBody');
     const title = document.getElementById('modalTitle');
+    
+    // On s'assure que les données existent (si tu as bien copié ton factionData)
+    if (typeof factionData === 'undefined') {
+        console.error("Erreur : factionData manquant."); 
+        return;
+    }
+
     const data = factionData[key];
 
     if (data) {
@@ -229,34 +236,30 @@ function openFaction(key) {
         let html = `
         <div style="display:flex; border-bottom:1px solid #33ff00; padding:5px; margin-bottom:10px; font-weight:bold; color:#33ff00; font-size:0.8em;">
             <div style="width:15%;">TIER</div>
-            <div style="width:60%;">ARCHÉTYPE & SOURCE</div>
+            <div style="width:60%;">ARCHÉTYPE</div>
             <div style="width:25%; text-align:right;">ACTION</div>
         </div>
         <div style="max-height:60vh; overflow-y:auto; padding-right:5px;">`;
 
-        // Tri : Tier croissant, puis Alphabétique
-        const sortedUnits = [...data.units].sort((a, b) => {
-            if (a.tier === b.tier) return a.name.localeCompare(b.name);
-            return a.tier - b.tier;
-        });
+        const sortedUnits = [...data.units].sort((a, b) => a.tier - b.tier);
 
         sortedUnits.forEach(u => {
-            let tierColor = "#33ff00"; // Vert
-            if (u.tier >= 3) tierColor = "#d4af37"; // Or
-            if (u.tier >= 5) tierColor = "#ff3333"; // Rouge
+            let tierColor = "#33ff00"; 
+            if (u.tier >= 3) tierColor = "#d4af37"; 
+            if (u.tier >= 5) tierColor = "#ff3333"; 
 
+            // C'EST ICI QUE C'EST IMPORTANT : onclick="startBuilder(...)"
             html += `
-            <div class="archetype-row">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #1a5c00; padding:10px 0;">
                 <div style="width:15%;">
-                    <span class="meta-badge tier-badge" style="background-color:${tierColor}; color:#000;">T${u.tier}</span>
+                    <span style="background:${tierColor}; color:black; padding:2px 5px; font-size:0.8em; font-weight:bold;">T${u.tier}</span>
                 </div>
-                <div class="archetype-info" style="width:60%;">
+                <div style="width:60%;">
                     <strong style="color: #d4af37;">${u.name}</strong><br>
-                    <span class="meta-badge source-badge">${u.src}</span>
-                    <div style="font-size:0.8em; color:#ccc; margin-top:3px;">${u.desc}</div>
+                    <span style="font-size:0.8em; color:#ccc;">${u.desc}</span>
                 </div>
                 <div style="width:25%; text-align:right;">
-                    <a href="conditions.html?unit=${u.id}" class="archetype-btn">CHOISIR</a>
+                    <button class="archetype-btn" onclick="startBuilder('${u.id}')">CHOISIR</button>
                 </div>
             </div>`;
         });
@@ -267,25 +270,10 @@ function openFaction(key) {
     }
 }
 
-// --- 2. GESTION DE LA FERMETURE (Event Listener Robuste) ---
-// C'est cette partie qui fait marcher le bouton ID="btnClose"
+// Gestion fermeture
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('raceModal');
-    const btnClose = document.getElementById('btnClose');
-
-    // Clic sur la croix
-    if (btnClose) {
-        btnClose.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-    } else {
-        console.error("Erreur : Bouton fermeture introuvable");
-    }
-
-    // Clic en dehors de la fenêtre
-    window.addEventListener('click', function(event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
-    });
+    const btn = document.getElementById('btnClose');
+    if(btn) btn.onclick = () => modal.style.display = 'none';
+    window.onclick = (e) => { if(e.target == modal) modal.style.display = 'none'; }
 });

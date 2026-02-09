@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hangar - Cogitateur W&G</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles spécifiques aux véhicules */
+        .vehicle-card {
+            border: 1px solid #1a5c00;
+            background: rgba(0, 20, 0, 0.6);
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .vehicle-card:hover { border-color: #33ff00; background: rgba(0, 50, 0, 0.6); }
+        
+        .stat-grid-vehicle {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #ccc;
+            text-align: center;
+        }
+        .stat-box { border: 1px solid #333; padding: 2px; }
+        .stat-label { display: block; font-size: 0.7em; color: #1a5c00; }
+        .stat-value { color: #d4af37; font-weight: bold; }
+
+        /* Filtres */
+        .filter-btn { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Terminal</a>
+        <a href="races.html">Création</a>
+        <a href="armurerie.html">Armurerie</a>
+        <a href="codex.html">CODEX</a>
+        <a href="vehicules.html" class="active">Hangar</a> <a href="carte.html">Cartographie</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="container">
+            <h1>+++ HANGAR IMPÉRIAL & XENOS +++</h1>
+            <p>Accès aux VSC (Véhicules Standards de Construction) et machines de guerre.</p>
+
+            <input type="text" id="searchVehicle" class="search-bar" placeholder="Rechercher (ex: Leman Russ, Rhino, Motojet)..." onkeyup="filterVehicles()">
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="setVType('ALL')">TOUT</button>
+                <button class="filter-btn" onclick="setVType('WALKER')">MARCHEURS</button>
+                <button class="filter-btn" onclick="setVType('TRACKED')">CHENILLÉS</button>
+                <button class="filter-btn" onclick="setVType('GRAV')">ANTI-GRAV/VOL</button>
+                <button class="filter-btn" onclick="setVType('WHEELED')">ROUES/MOTOS</button>
+            </div>
+
+            <div id="vehicleGrid" class="item-grid"></div>
+        </div>
+    </div>
+
+    <div id="vehicleModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" id="btnCloseVehicle">&times;</span>
+            <h2 id="modalVehicleTitle">NOM DU VÉHICULE</h2>
+            <div id="modalVehicleBody"></div>
+        </div>
+    </div>
+
+    <script src="vehicles-script.js"></script>
+</body>
+</html>

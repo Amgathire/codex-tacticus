@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Armurerie - Cogitateur W&G</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- STYLE ARMURERIE --- */
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #33ff00;
+            color: #33ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            box-sizing: border-box; /* Important pour l'alignement flex */
+        }
+        .search-bar:focus { outline: none; box-shadow: 0 0 10px #33ff00; }
+
+        /* NOUVEAU STYLE : MENU DÉROULANT */
+        .search-select {
+            cursor: pointer;
+            appearance: none; /* Cache la flèche moche par défaut */
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2333ff00%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+        .search-select option {
+            background-color: black;
+            color: #33ff00;
+            padding: 10px;
+        }
+
+        .filter-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn {
+            background: black;
+            border: 1px solid #1a5c00;
+            color: #1a5c00;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            flex-grow: 1;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #1a5c00;
+            color: #33ff00;
+            border-color: #33ff00;
+        }
+
+        /* GRILLE D'ITEMS */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .item-card {
+            border: 1px solid #1a5c00;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .item-card:hover {
+            border-color: #33ff00;
+            box-shadow: 0 0 10px rgba(51, 255, 0, 0.2);
+        }
+        
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-name { color: #d4af37; font-weight: bold; font-size: 1.1em; }
+        .item-sub { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
+        /* BADGES */
+        .badge { font-size: 0.7em; padding: 2px 5px; border-radius: 2px; margin-right: 5px; }
+        .badge-rare { border: 1px solid #d4af37; color: #d4af37; } /* Rare */
+        .badge-common { border: 1px solid #555; color: #aaa; } /* Commun */
+        .badge-unique { border: 1px solid #ff3333; color: #ff3333; } /* Archéotech */
+        
+        .stat-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            border-top: 1px dashed #333;
+            padding-top: 5px;
+            font-size: 0.9em;
+            color: #33ff00;
+        }
+
+        /* MODALE STATS */
+        .stat-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .stat-table th { text-align: left; color: #1a5c00; border-bottom: 1px solid #1a5c00; padding: 5px; }
+        .stat-table td { color: #33ff00; padding: 5px; border-bottom: 1px solid #333; }
+        .trait-tag { color: #00ffff; font-size: 0.9em; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Terminal</a>
+        <a href="races.html">Création</a>
+        <a href="armurerie.html" class="active">Armurerie</a>
+        <a href="lore.html">Archives</a>
+        <a href="codex.html">CODEX</a>
+        <a href="carte.html">Cartographie</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="container">
+            <h1>+++ LOGISTIQUE MUNITORUM +++</h1>
+            <p>Accès aux schémas STC approuvés et Xenos sanctionnés.</p>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                
+                <input type="text" id="searchInput" class="search-bar" 
+                       placeholder="Rechercher (ex: Bolter, Plasma)..." 
+                       onkeyup="filterItems()" 
+                       style="margin-bottom: 0; flex: 3;">
+
+                <select id="factionFilter" class="search-bar search-select" onchange="filterItems()" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                    <option value="ALL">TOUTES FACTIONS</option>
+                    <option value="IMPERIUM">IMPERIUM (Générique)</option>
+                    <option value="ASTARTES">ADEPTUS ASTARTES</option>
+                    <option value="ADEPTUS MECHANICUS">ADEPTUS MECHANICUS</option>
+                    <option value="ADEPTUS MINISTORUM">ADEPTUS MINISTORUM</option>
+                    <option value="CHAOS">CHAOS</option>
+                    <option value="AELDARI">AELDARI (Craftworld)</option>
+                    <option value="DRUKHARI">DRUKHARI</option>
+                    <option value="ORK">ORKS</option>
+                    <option value="T'AU">EMPIRE T'AU</option>
+                    <option value="NECRONS">NECRONS</option>
+                    <option value="SCUM">MARGINAUX / SCUM</option>
+                </select>
+
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="setCategory('ALL')">TOUT</button>
+                <button class="filter-btn" onclick="setCategory('MELEE')">MÊLÉE</button>
+                <button class="filter-btn" onclick="setCategory('RANGED')">DISTANCE</button>
+                <button class="filter-btn" onclick="setCategory('ARMOR')">ARMURES</button>
+                <button class="filter-btn" onclick="setCategory('GEAR')">ÉQUIPEMENT</button>
+                <button class="filter-btn" onclick="setCategory('CYBER')">CYBERNÉTIQUE</button>
+            </div>
+
+
+<div class="tech-divider">SCHÉMA TECHNIQUE STC</div>
+
+<div class="hud-panel" style="margin-top: 20px;">
+    <div class="hud-title">COGNIS-SCAN : BOLTER PATTERN GILEAD</div>
+    
+    <div id="bolter-3d-container"></div>
+    
+    <div class="notif-footer">STATUS: MODÈLE PRIMITIF GÉNÉRÉ VIA NOOSPHÈRE</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="bolter-3d-container.js"></script>
+<script src="armory-script.js"></script>
+
+
+            <div id="armoryGrid" class="item-grid"></div>
+            
+            <div class="terminal-footer">
+                <span>+++ TERMINUS EST +++</span>
+                <span>COGITATEUR MUNITORUM // SECTEUR CALIXIS</span>
+                <span>PENSÉE DU JOUR : "L'ignorance est une bénédiction, mais ne la gaspillez pas."</span>
+                <span style="font-size: 0.7em; color: #003300;">v2.1.054-Beta // NOOSPHERE LINK: STABLE</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="itemModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" id="btnCloseItem">&times;</span>
+            <h2 id="modalItemTitle">NOM DE L'OBJET</h2>
+            <div id="modalItemBody"></div>
+        </div>
+    </div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="bolter-3d.js"></script>
+    <script src="armory-script.js"></script>
+</body>
+</html>

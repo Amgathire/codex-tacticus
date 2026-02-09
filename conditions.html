@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dossier Agent - W&G</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* STYLE FICHE AGENT */
+        .agent-header {
+            border-bottom: 2px solid #33ff00;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .agent-title { font-size: 2em; color: #d4af37; margin: 0; }
+        .agent-tier { background: #33ff00; color: black; padding: 5px 10px; font-weight: bold; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            border: 1px solid #1a5c00;
+            background: rgba(0,20,0,0.5);
+            text-align: center;
+            padding: 10px;
+        }
+        .stat-val { font-size: 1.5em; color: #33ff00; font-weight: bold; display: block; }
+        .stat-label { font-size: 0.8em; color: #aaa; }
+
+        .ability-box {
+            border: 1px dashed #d4af37;
+            padding: 20px;
+            margin: 20px 0;
+            background: rgba(20, 20, 0, 0.3);
+        }
+        .section-title { color: #33ff00; border-bottom: 1px solid #1a5c00; margin-top: 30px; }
+        
+        /* Bouton Retour */
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: 1px solid #33ff00;
+            color: #33ff00;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: #33ff00; color: black; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Terminal</a>
+        <a href="races.html" class="active">Création</a> <a href="armurerie.html">Armurerie</a>
+        <a href="lore.html">Archives</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="container">
+            <div class="agent-header">
+                <div>
+                    <h1 class="agent-title" id="charName">CHARGEMENT...</h1>
+                    <span style="color: #aaa;" id="charFaction">...</span>
+                </div>
+                <div class="agent-tier" id="charTier">TIER ?</div>
+            </div>
+
+            <h3 class="section-title">ATTRIBUTS</h3>
+            <div class="stat-grid" id="attributesGrid">
+                </div>
+
+            <h3 class="section-title">CAPACITÉ D'ARCHÉTYPE</h3>
+            <div class="ability-box">
+                <strong style="color: #d4af37; font-size: 1.2em;" id="abilityName">...</strong>
+                <p id="abilityDesc">En attente des données du Munitorum...</p>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <h3 class="section-title">COMPÉTENCES CLÉS</h3>
+                    <ul id="skillsList" style="color: #ccc;"></ul>
+                </div>
+                <div style="flex: 1;">
+                    <h3 class="section-title">ÉQUIPEMENT STANDARD</h3>
+                    <ul id="wargearList" style="color: #ccc;"></ul>
+                </div>
+            </div>
+
+            <a href="races.html" class="back-btn">⟵ RETOUR AU SÉLECTEUR</a>
+        </div>
+    </div>
+
+    <script src="conditions-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal Cogitateur - Accès Autorisé</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- STYLES SPÉCIFIQUES ACCUEIL --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .system-card {
+            border: 1px solid #33ff00;
+            background: rgba(0, 20, 0, 0.7);
+            padding: 20px;
+            transition: 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+        .system-card:hover {
+            background: #33ff00;
+            color: black;
+            box-shadow: 0 0 15px #33ff00;
+        }
+        .system-card h3 { margin-top: 0; }
+        .icon-large { font-size: 40px; margin-bottom: 10px; display: block; }
+
+        /* Effet "Pensée du Jour" */
+        .thought-box {
+            border-top: 1px dashed #33ff00;
+            border-bottom: 1px dashed #33ff00;
+            padding: 15px;
+            margin: 30px 0;
+            text-align: center;
+            font-style: italic;
+            color: #d4af37; /* Or */
+        }
+
+        /* Effet Terminal Log */
+        .terminal-log {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #00aa00;
+            border: 1px solid #1a5c00;
+            padding: 10px;
+            height: 150px;
+            overflow: hidden;
+            background: black;
+            text-align: left;
+            margin-top: 30px;
+            position: relative;
+        }
+        .log-entry { margin-bottom: 5px; }
+        
+        /* Animation curseur clignotant */
+        .typing::after {
+            content: '█';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="active">Terminal</a>
+        <a href="races.html">Création de Personnage</a>
+        <a href="lore.html">Archives</a>
+        <a href="codex.html">CODEX</a>
+        <a href="carte.html">Cartographie</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="container">
+            <h1 id="welcomeTitle" class="typing">INITIALISATION...</h1>
+            <p id="subTitle">Authentification : <span style="color:#d4af37;">MAGOS BIOLOGIS</span> // Clearance : VERMILION</p>
+
+            <div class="thought-box">
+                <span id="thoughtOfTheDay">Chargement de la sagesse impériale...</span>
+            </div>
+
+<div class="dashboard-grid">
+                
+                <div class="system-card" onclick="window.location.href='races.html'">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M12 2C7.58 2 4 5.58 4 10c0 2.64 1.31 4.96 3.3 6.35.25 2.15.55 4.15 1.7 5.65h6c1.15-1.5 1.45-3.5 1.7-5.65C18.69 14.96 20 12.64 20 10c0-4.42-3.58-8-8-8zm0 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-4-2c0-1.1.9-2 2-2s2 .9 2 2H8z"/>
+                        <path d="M9 19h6v2H9z" opacity="0.5"/> </svg>
+                    <h3>PROTOCOLE GENESIS</h3>
+                    <p>Créer un nouvel agent (Wrath & Glory v2.1).</p>
+                </div>
+                
+                <div class="system-card" onclick="window.location.href='lore.html'">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                    <h3>ARCHIVES STC</h3>
+                    <p>Consulter les données historiques et Xenos.</p>
+                </div>
+
+                <div class="system-card" onclick="window.location.href='carte.html'">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/>
+                        <rect x="11" y="2" width="2" height="4"/>
+                        <rect x="11" y="18" width="2" height="4"/>
+                        <rect x="2" y="11" width="4" height="2"/>
+                        <rect x="18" y="11" width="4" height="2"/>
+                    </svg>
+                    <h3>AUSPEX TACTIQUE</h3>
+                    <p>Afficher la carte stellaire du secteur.</p>
+                </div>
+                
+                <div class="system-card" onclick="window.location.href='armurerie.html'">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M19.5 5.5L14 11l-2-2 5.5-5.5c.8-.8 2.3-.6 3.1.2.9.8 1.1 2.3.2 3.1zM3 13.5l2.5 2.5 4.5-4.5-2.5-2.5-4.5 4.5zm8 3l1.5-1.5 6 6-4 4-6-6 1.5-1.5z"/> 
+                        <path d="M9 7L7 9l5 5 2-2z"/> </svg>
+                    <h3>ARMURERIE</h3>
+                    <p>Requisition d'équipement (W&G v2.1).</p>
+                </div>
+
+                <div class="system-card" onclick="window.location.href='vehicules.html'">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65z"/>
+                    </svg>
+                    <h3>HANGAR</h3>
+                    <p>Véhicules & Marcheurs (Church of Steel).</p>
+                </div>
+
+            </div>
+            </div>
+
+            <div class="terminal-log" id="systemLog">
+                <div class="log-entry">[08:00.01] Connexion au Noosphere établie.</div>
+                <div class="log-entry">[08:00.05] Esprit de la machine apaisé.</div>
+                <div class="log-entry">[08:01.20] Scan biométrique : POSITIF.</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+        // --- 1. PENSÉE DU JOUR (Inchangé) ---
+        const thoughts = [
+            "L'espoir est le premier pas sur la route de la déception.",
+            "L'innocence ne prouve rien.",
+            "Il n'y a pas de paix parmi les étoiles.",
+            "La foi est mon bouclier.",
+            "La connaissance sans la foi est une hérésie.",
+            "Servir l'Empereur est sa propre récompense."
+        ];
+        document.getElementById('thoughtOfTheDay').innerText = "+++ Pensée du jour : \"" + thoughts[Math.floor(Math.random() * thoughts.length)] + "\" +++";
+
+        // --- 2. TITRE MACHINE À ÉCRIRE (Inchangé) ---
+        const titleText = "+++ BIENVENUE SUR LE COGITATEUR CENTRAL +++";
+        const titleElement = document.getElementById('welcomeTitle');
+        let i = 0;
+        function typeWriter() {
+            if (i < titleText.length) {
+                if(i===0) titleElement.innerHTML = "";
+                titleElement.innerHTML += titleText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 30);
+            }
+        }
+        setTimeout(typeWriter, 200);
+
+        // --- 3. GÉNÉRATEUR DE LOGS SYSTÈME AVANCÉ ---
+        
+        const logContainer = document.getElementById('systemLog');
+        
+        // Banques de données techniques
+        const actions = ["MOUNT", "EXEC", "PARSE", "ALLOC", "PING", "KILL", "DUMP", "READ", "WRITE", "SCAN"];
+        const components = ["/sys/kernel/warp_drive", "/usr/bin/litany_v4", "mem_stack_01", "logic_gate_7", "noosphere_uplink", "servitor_link_b", "astropath_relay"];
+        const statuses = ["[OK]", "[OK]", "[OK]", "[PENDING]", "[WARNING]", "[ENCRYPTED]"]; // Plus de OK que d'erreurs
+        const hexChars = "0123456789ABCDEF";
+
+        // Fonction pour générer une adresse mémoire hexadécimale (ex: 0x4F1B)
+        function getHex(length) {
+            let result = "0x";
+            for (let k = 0; k < length; k++) {
+                result += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
+            }
+            return result;
+        }
+
+        // Fonction pour générer une ligne de commande crédible
+        function generateLine() {
+            const type = Math.random();
+            
+            // Type 1 : Ligne de code pure
+            if (type < 0.4) {
+                const act = actions[Math.floor(Math.random() * actions.length)];
+                const comp = components[Math.floor(Math.random() * components.length)];
+                return `${act} ${comp} -f --verbose`;
+            } 
+            // Type 2 : Dump mémoire (très Matrix)
+            else if (type < 0.7) {
+                return `MEM_DUMP: ${getHex(2)} ${getHex(2)} ${getHex(2)} ${getHex(2)} | ${getHex(4)}...`;
+            }
+            // Type 3 : Lore 40k technique
+            else {
+                const loreMsgs = [
+                    "Spirit_Machine.exe: Blessings applied.",
+                    "Purging data cache... DONE.",
+                    "Heresy_Check_Routine: 0 threats found.",
+                    "Uploading prayer to sector 7G...",
+                    "Omnissiah_Link: STABLE.",
+                    "Recalibrating Auspex sensors..."
+                ];
+                return `[${getHex(4)}] > ${loreMsgs[Math.floor(Math.random() * loreMsgs.length)]}`;
+            }
+        }
+
+        function addLog() {
+            const newLog = document.createElement('div');
+            newLog.className = 'log-entry';
+            
+            // Ajout du timestamp milliseconde pour faire réaliste
+            const ms = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+            const status = Math.random() > 0.8 ? ` ${statuses[Math.floor(Math.random() * statuses.length)]}` : "";
+            
+            newLog.innerText = `[00:${ms}] ${generateLine()}${status}`;
+            
+            // Style conditionnel pour les erreurs/warnings
+            if (newLog.innerText.includes("WARNING")) newLog.style.color = "orange";
+            if (newLog.innerText.includes("KILL")) newLog.style.color = "#ff3333";
+            
+            logContainer.appendChild(newLog);
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            if (logContainer.children.length > 30) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        // --- MOTEUR DE VITESSE VARIABLE ---
+        function loopLogs() {
+            addLog();
+
+            let nextSpeed;
+            const mode = Math.random();
+
+            if (mode < 0.1) {
+                // MODE PAUSE (Le processeur réfléchit) : 500ms à 1.5s
+                nextSpeed = Math.random() * 1000 + 500;
+            } else if (mode < 0.4) {
+                // MODE BURST (Défilement de données ultra rapide) : 10ms à 50ms
+                nextSpeed = Math.random() * 40 + 10;
+            } else {
+                // MODE NORMAL : 100ms à 300ms
+                nextSpeed = Math.random() * 200 + 100;
+            }
+
+            setTimeout(loopLogs, nextSpeed);
+        }
+
+        // Lancement initial
+        loopLogs();
+    </script>
+</body>
+</html>

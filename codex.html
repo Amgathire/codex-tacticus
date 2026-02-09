@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CODEX TACTICUS - Simulation Intégrée</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="hud-screen">
+    <div id="end-screen">
+    <div id="end-message"></div>
+    <button class="btn-tactical" style="margin-top: 50px; font-size: 1.5em;" onclick="location.reload()">RÉINITIALISER COGITATEUR</button>
+</div>
+
+<div id="pop-notif" class="notif-antivirus">
+    <div class="notif-header">
+        <span>MUNITORUM_ADVISORY.EXE</span>
+        <span onclick="this.parentElement.parentElement.style.display='none'" style="cursor:pointer;">[X]</span>
+    </div>
+    <div id="pop-body" class="notif-body">
+        </div>
+    <div class="notif-footer">STATUS: ANALYZING...</div>
+</div>
+    
+    <nav style="border-bottom: 1px solid #1a5c00; background: rgba(0,0,0,0.8);">
+        <a href="index.html">Terminal</a>
+        <a href="races.html">Création</a>
+        <a href="codex.html" class="active" style="color:#33ff00; text-shadow: 0 0 5px #33ff00;">CODEX</a>
+        <a href="armurerie.html">Armurerie</a>
+        <a href="vehicules.html">Hangar</a>
+    </nav>
+
+    <div class="screen-content">
+        <div class="container">
+
+            <div class="top-hud-bar">
+                <div style="display:flex; gap:10px;">
+                    <svg class="status-icon" viewBox="0 0 24 24"><path d="M12 2C7 2 3 6 3 11c0 2.5 2 4.5 4 6v3h10v-3c2-1.5 4-3.5 4-6 0-5-4-9-9-9zm0 2c4.4 0 8 3.6 8 8 0 1.2-.3 2.3-.8 3.3-.5-.3-1.1-.5-1.7-.5s-1.2.2-1.7.5c-.5-1-1.6-1.8-2.8-1.8-1.2 0-2.3.8-2.8 1.8-.5-.3-1.1-.5-1.7-.5s-1.2.2-1.7.5C4.3 14.3 4 13.2 4 11c0-4.4 3.6-8 8-8z"/></svg>
+                </div>
+                <div style="text-align:center; border: 1px solid #33ff00; padding: 5px 20px; background: rgba(51, 255, 0, 0.1);">
+                    <span style="font-size: 1.5em; letter-spacing: 3px; font-weight:bold;">CODEX TACTICUS // SIMULATEUR 1V1</span>
+                </div>
+                <div style="text-align:right; font-size: 0.8em; color: #1a5c00;">
+                    SYS.VER 2.37 [cite: 4]
+                </div>
+            </div>
+
+            <div class="hud-panel">
+                <div class="hud-title">SÉLECTION DU PROTOCOLE D'ATTAQUE</div>
+                <p style="font-size: 0.8em; color: #888; margin-bottom: 10px;">Le choix du protocole configure automatiquement vos systèmes d'armes pour la simulation en bas de page.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-tactical" onclick="setProtocol('court')">TIR COURT (+1 dé)</button>
+                    <button class="btn-tactical" onclick="setProtocol('long')">TIR LONG (+2 DN)</button>
+                    <button class="btn-tactical" onclick="setProtocol('melee')">MÊLÉE (+Force)</button>
+                    <button class="btn-tactical" onclick="setProtocol('zone')">ZONE (DN 3)</button>
+                    <button class="btn-tactical" onclick="setProtocol('horde')">HORDE (Multi-Kill)</button>
+                </div>
+                <div id="protocol-desc" style="margin-top:15px; padding:10px; border-top:1px solid #1a5c00; font-size:0.9em;">
+                    </div>
+            </div>
+
+            <div id="simulator-zone" class="hud-panel sim-box" style="clip-path: none; border: none; background: transparent; opacity: 0.5; pointer-events: none;">
+                <div class="sim-full-layout">
+                    
+                    <div class="side-hud-overlay left-hud">
+                        <div class="hud-subtitle">BIO-MONITEUR [A7-4]</div>
+                        <div class="biometric-scan"><div class="scan-line"></div></div>
+                        <div class="stat-row"><span class="stat-label">ÉTAT VITAL</span> <span class="stat-val">OK</span></div>
+                        <div class="stat-row"><span class="stat-label">MUNITIONS</span> <span class="stat-val">3/3 [cite: 243]</span></div>
+                    </div>
+
+                    <div class="sim-interface-wrapper">
+                         <div class="hud-title" id="sim-title">UNITÉ EN ATTENTE DE PROTOCOLE</div>
+                         
+                         <div class="sim-interface">
+                            <div class="sim-side-panel ally-panel">
+                                <div class="panel-bracket-top"></div>
+                                <h4>ASTARTES</h4>
+                                <div class="stat-row"><span class="stat-label">PV (W)</span> <span class="stat-val" id="ally-w">10</span></div>
+                                <div class="stat-row"><span class="stat-label">POOL</span> <span class="stat-val" id="ally-pool">9</span></div>
+                                <div class="stat-row"><span class="stat-label">DÉFENSE</span> <span class="stat-val">4</span></div>
+                                <div class="panel-bracket-bottom"></div>
+                            </div>
+
+                            <div id="sim-content" class="sim-center-console">
+                                <div id="phase-attack" class="sim-step active">
+                                    <p id="attack-instruction" style="text-align:center; font-size:0.9em;"></p>
+                                    <button class="btn-tactical" style="width:100%" onclick="executeRoll()">ENGAGER LA CIBLE</button>
+                                </div>
+
+                                <div id="phase-shift" class="sim-step">
+                                    <p id="roll-results" style="text-align:center;"></p>
+                                    <div id="shift-buttons" style="display:flex; justify-content:center; gap:5px; flex-wrap:wrap;"></div>
+                                </div>
+
+                                <div id="phase-enemy" class="sim-step">
+                                    <p style="text-align:center; color:#ff3333;">ALERTE : RIPOSTE ENNEMIE</p>
+                                    <button class="btn-tactical" style="width:100%" onclick="enemyTurn()">ENCAISSER L'IMPACT</button>
+                                </div>
+                            </div>
+
+                            <div class="sim-side-panel enemy-panel">
+                                <div class="panel-bracket-top"></div>
+                                <h4 id="enemy-name" style="color:#ff3333; border-color:#ff3333;">CIBLE</h4>
+                                <div class="stat-row"><span class="stat-label">PV (W)</span> <span class="stat-val" id="enemy-w">1</span></div>
+                                <div class="stat-row"><span class="stat-label">DN</span> <span class="stat-val" id="enemy-def">3</span></div>
+                                <div class="stat-row"><span class="stat-label">RÉSIL.</span> <span class="stat-val" id="enemy-res">8</span></div>
+                                <div class="panel-bracket-bottom"></div>
+                            </div>
+                         </div>
+                         <div class="sim-log" id="sim-log">> Système en attente...</div>
+                    </div>
+
+                    <div class="side-hud-overlay right-hud">
+                        <div class="hud-subtitle">VERROUILLAGE</div>
+                        <div class="radar-circle"><div class="radar-sweep"></div><div class="radar-blip"></div></div>
+                        <div class="stat-row"><span class="stat-label">PORTÉE</span> <span class="stat-val" id="hud-range">20M</span></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; border-top: 1px solid #1a5c00; padding-top: 10px; display: flex; justify-content: space-between; font-size: 0.7em; color: #1a5c00;">
+                <span>SECTEUR: GILEAD</span>
+                <span>COGITATEUR MUNITORUM ACTIVÉ</span>
+            </div>
+        </div>
+    </div>
+
+<script>
+// --- ÉTAT DU JEU ---
+    let game = {
+        protocol: '',
+        allyW: 10,
+        enemyW: 10,
+        enemyMaxW: 10,
+        enemyDef: 3,
+        enemyRes: 8,
+        pool: 9,
+        lastIcons: 0
+    };
+
+    const protocolData = {
+        court: { label: "TIR COURT", pool: 10, dn: 3, range: "15M", desc: "Bonus +1 dé (Portée < 1/2). DN basé sur la Défense cible (3)." },
+        long: { label: "TIR LONG", pool: 9, dn: 5, range: "60M", desc: "Pénalité +2 DN (Portée > 100%). DN total requis : 5." },
+        melee: { label: "CORPS À CORPS", pool: 9, dn: 3, range: "ENGAGÉ", desc: "Engagement direct. Dégâts augmentés par votre Force (Base 10 + Force 5)." },
+        zone: { label: "ZONE (BLAST)", pool: 9, dn: 3, range: "30M", desc: "Jet fixe DN 3 requis pour toucher la zone. Dégâts de zone Rating 6." },
+        horde: { label: "COMBAT DE HORDE", pool: 9, dn: 3, range: "20M", desc: "La horde a 10 PV. Chaque succès excédentaire (Shift) élimine 1 membre supplémentaire." }
+    };
+
+    function log(msg) {
+        const l = document.getElementById('sim-log');
+        if (l) {
+            l.innerHTML += `<br>> ${msg}`;
+            l.scrollTop = l.scrollHeight;
+        }
+    }
+
+    // --- SYSTÈME DE POP-UP (RESTE OUVERT) ---
+    function showPop(html) {
+        const pop = document.getElementById('pop-notif');
+        const body = document.getElementById('pop-body');
+        if (pop && body) {
+            body.innerHTML = html;
+            pop.style.display = 'block';
+        }
+    }
+
+    // --- CONFIGURATION ---
+function setProtocol(key) {
+        game.protocol = key;
+        const p = protocolData[key];
+        
+        // --- MISE À JOUR DES PV ENNEMIS ---
+        // Si c'est une horde, on garde 10 PV. 
+        // Sinon (Tir court, long, mêlée, zone), on passe à 12 PV.
+        game.enemyW = (key === 'horde') ? 10 : 12; 
+        
+        game.enemyMaxW = game.enemyW;
+        game.pool = p.pool;
+        game.enemyDef = p.dn;
+        
+        // Mise à jour visuelle
+        document.getElementById('simulator-zone').style.opacity = "1";
+        document.getElementById('simulator-zone').style.pointerEvents = "all";
+        document.getElementById('protocol-desc').innerHTML = `<strong class="highlight">${p.label} ACTIVÉ :</strong> ${p.desc}`;
+        document.getElementById('sim-title').innerText = `ENGAGEMENT : ${p.label}`;
+        document.getElementById('ally-pool').innerText = game.pool;
+        document.getElementById('enemy-def').innerText = game.enemyDef;
+        document.getElementById('enemy-w').innerText = game.enemyW;
+        document.getElementById('enemy-name').innerText = (key === 'horde') ? "HORDE" : "CULTISTE ELITE";
+        document.getElementById('hud-range').innerText = p.range;
+        document.getElementById('attack-instruction').innerText = `Système prêt. Tir de ${game.pool} dés contre DN ${game.enemyDef}.`;
+        
+        log(`Protocole ${p.label} chargé. Cible : ${game.enemyW} PV.`);
+    }
+    // --- PHASE D'ATTAQUE ---
+    function executeRoll() {
+        showPop(`
+            <strong>ANALYSE DU POOL</strong><br><br>
+            • <span class="highlight-pop">${game.pool} Dés :</span> Somme de votre Attribut + Compétence.<br>
+            • <span class="highlight-pop">DÉ DE WRATH :</span> 1 des dés est spécial. Un 6 génère de la Gloire ou un Critique.
+        `);
+
+        let normalPool = game.pool - 1;
+        let wrathDie = Math.floor(Math.random() * 6) + 1;
+        let normalIcons = 0;
+
+        for (let i = 0; i < normalPool; i++) {
+            let roll = Math.floor(Math.random() * 6) + 1;
+            if (roll === 4 || roll === 5) normalIcons += 1; 
+            if (roll === 6) normalIcons += 2; 
+        }
+
+        let wrathIcons = 0;
+        if (wrathDie === 4 || wrathDie === 5) wrathIcons = 1;
+        if (wrathDie === 6) wrathIcons = 2;
+
+        game.lastIcons = normalIcons + wrathIcons;
+        
+        document.getElementById('phase-attack').classList.remove('active');
+        document.getElementById('phase-shift').classList.add('active');
+
+        let wrathMessage = "";
+        if (wrathDie === 1) {
+            wrathMessage = `<br><span style="color:#ff3333; font-weight:bold;">⚠️ COMPLICATION !</span>`;
+            log("COMPLICATION : Un incident survient !"); 
+        } else if (wrathDie === 6) {
+            wrathMessage = `<br><span class="highlight">⚡ CRITIQUE !</span>`;
+            log("CRITIQUE : Vous gagnez +1 Gloire !"); 
+        }
+
+        if (game.lastIcons >= game.enemyDef) {
+            let extra = game.lastIcons - game.enemyDef;
+            document.getElementById('roll-results').innerHTML = 
+                `RÉSULTAT : <span class="highlight">${game.lastIcons} Icônes</span> (DN ${game.enemyDef})${wrathMessage}<br>Shift possibles : ${extra}`;
+            
+            let btns = "";
+            for(let i=0; i <= extra; i++) {
+                btns += `<button class="nav-btn" onclick="applyDamage(${i})">SHIFT +${i}</button>`;
+            }
+            document.getElementById('shift-buttons').innerHTML = btns;
+        } else {
+            document.getElementById('roll-results').innerHTML = 
+                `<span style="color:#ff3333;">ÉCHEC : ${game.lastIcons} Icônes</span>${wrathMessage}`;
+            document.getElementById('shift-buttons').innerHTML = `<button class="nav-btn" onclick="goToEnemy()">CONTINUER</button>`;
+        }
+    }
+
+    // --- DÉGÂTS ---
+    function applyDamage(shift) {
+        let baseDmg = 10;
+        if(game.protocol === 'melee') baseDmg += 5; 
+        
+        let edRoll = (Math.random() > 0.5 ? 1 : 2); 
+        let totalDmg = baseDmg + shift + edRoll;
+        let finalWounds = Math.max(0, totalDmg - 7);
+
+        showPop(`
+            <strong>RÉSOLUTION D'IMPACT</strong><br><br>
+            • <span class="highlight-pop">Dégâts (${totalDmg}) :</span> Base (${baseDmg}) + Shift (${shift}) + Dés Bonus (ED).<br>
+            • <span class="highlight-pop">Blessures :</span> Dégâts moins la Résilience ennemie (8) réduite par l'AP du Bolter (-1).
+        `);
+
+        if (game.protocol === 'horde') {
+            let kills = 1 + shift; 
+            game.enemyW -= kills;
+            log(`HORDE : ${kills} ennemis neutralisés.`);
+        } else {
+            game.enemyW -= finalWounds;
+            log(`IMPACT : ${finalWounds} blessures infligées.`);
+        }
+
+        updateUI();
+        checkEndGame();
+
+        if (game.enemyW > 0) {
+            goToEnemy();
+        }
+    }
+
+    function enemyAction() {
+        let dmg = Math.floor(Math.random() * 4); 
+        game.allyW -= dmg;
+        log(`ALERTE : Impact détecté. -${dmg} PV.`);
+
+        showPop(`
+            <strong>ALERTE INTÉGRITÉ</strong><br><br>
+            Riposte ennemie enregistrée.<br>
+            • <span class="highlight-pop">Perte : -${dmg} PV</span>.<br>
+            Analysez la Résilience pour réduire ces impacts.
+        `);
+        
+        updateUI();
+        checkEndGame(); 
+
+        if (game.allyW > 0) {
+            document.getElementById('phase-enemy').classList.remove('active');
+            document.getElementById('phase-attack').classList.add('active');
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('ally-w').innerText = Math.max(0, game.allyW);
+        document.getElementById('enemy-w').innerText = Math.max(0, game.enemyW);
+    }
+
+    function checkEndGame() {
+        const screen = document.getElementById('end-screen');
+        const msg = document.getElementById('end-message');
+
+        if (game.enemyW <= 0) {
+            msg.innerHTML = `<div class="win-text">WIN</div><p style="color:#33ff00;">MENACE NEUTRALISÉE // ZONE SÉCURISÉE</p>`;
+            screen.style.display = "flex";
+            log("MISSION ACCOMPLIE.");
+        } 
+        else if (game.allyW <= 0) {
+            msg.innerHTML = `<div class="lose-text">GAME OVER</div><p style="color:#ff3333;">L'ESPRIT DE LA MACHINE S'ÉTEINT... CONNEXION PERDUE</p>`;
+            screen.style.display = "flex";
+            log("ERREUR CRITIQUE : AGENT HORS SERVICE.");
+        }
+    }
+
+    function goToEnemy() {
+        document.getElementById('phase-shift').classList.remove('active');
+        document.getElementById('phase-enemy').classList.add('active');
+    }
+
+    function resetSim() {
+        location.reload();
+    }
+</script>
+</body>
+</html>

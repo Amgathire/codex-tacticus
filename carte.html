@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Auspex Stratégique - Secteur Calixis</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .leaflet-container { background: #020202; }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background-color: #0a0f0a; border: 1px solid #33ff00; color: #33ff00; border-radius: 0; }
+        .leaflet-container a.leaflet-popup-close-button { color: #33ff00; }
+    </style>
+</head>
+<body>
+    
+    <div class="screen-content">
+
+        <nav>
+        <a href="index.html" class="active">Terminal</a>
+        <a href="races.html">Création de Personnage</a>
+        <a href="lore.html">Archives</a>
+        <a href="codex.html">CODEX</a>
+        <a href="carte.html">Cartographie</a>
+        </nav>
+
+        <div class="container">
+            <h1>+++ Auspex Stratégique : Secteur Calixis +++</h1>
+            
+            <div class="map-interface">
+                <div id="star-map" class="star-map" style="cursor: crosshair;"></div>
+                <div id="planet-data" class="data-panel">
+                    <h3 class="blink">EN ATTENTE DE CIBLAGE...</h3>
+                    <p>Utilisez la molette pour zoomer et cliquez pour analyser.</p>
+                </div>
+            </div>
+            
+            <div style="height: 50px;"></div>
+        </div>
+
+    </div> <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="script.js"></script>
+</body>
+</html>

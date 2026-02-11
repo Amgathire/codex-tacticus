@@ -5,118 +5,107 @@
     <title>COGITATEUR DE RECRUTEMENT - W&G</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* --- CSS SPÉCIFIQUE AU BUILDER --- */
+        /* --- STYLE DU BUILDER AVANCÉ --- */
         
-        .phase-container { display: none; animation: fadeIn 0.4s ease-in-out; }
-        .phase-container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* PHASE 2 : LISTE ARCHETYPES */
-        .arch-list-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        .builder-layout {
+            display: flex;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 20px auto;
+            height: 90vh;
         }
-        .arch-card {
-            background: rgba(0, 20, 0, 0.8);
+
+        /* COLONNE GAUCHE (Interactive) */
+        .workspace {
+            flex: 3;
+            background: rgba(0, 10, 0, 0.8);
             border: 1px solid #1a5c00;
-            padding: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
-        .arch-card:hover {
-            border-color: #33ff00;
-            background: #001a00;
-            box-shadow: 0 0 15px rgba(51, 255, 0, 0.2);
-        }
-        .arch-tier-badge {
-            position: absolute; top: 0; right: 0;
-            background: #33ff00; color: #000;
-            font-weight: bold; padding: 2px 8px; font-size: 0.8em;
+
+        /* COLONNE DROITE (Résumé Fixe) */
+        .sidebar-summary {
+            flex: 1;
+            min-width: 320px;
+            background: rgba(0, 15, 0, 0.95);
+            border: 2px solid #33ff00;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* PHASE 3 : BUILDER LAYOUT */
-        .builder-layout { display: flex; gap: 20px; height: 75vh; margin-top: 10px; }
-        
-        .sidebar { 
-            width: 280px; 
-            background: rgba(0, 15, 0, 0.9); 
-            border: 2px solid #1a5c00; 
-            padding: 15px; 
-            overflow-y: auto; 
-            font-size: 0.9em;
+        /* HEADER SIDEBAR */
+        .summary-header {
+            background: #000;
+            padding: 15px;
+            border-bottom: 1px solid #33ff00;
+            text-align: center;
         }
+        .xp-big { font-size: 1.8em; font-weight: bold; color: #d4af37; display:block; margin-top:5px; }
 
-        .main-view { 
-            flex-grow: 1; 
-            background: rgba(0, 5, 0, 0.6); 
-            border: 1px solid #33ff00; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
+        /* LISTE RÉSUMÉ (Style Doctors of Doom) */
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
         }
-
-        .xp-header {
-            background: black;
-            border: 1px solid #33ff00;
-            padding: 10px 20px;
-            margin-bottom: 20px;
+        .summary-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #1a5c00;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Courier New', monospace;
         }
+        .summary-item:hover { background: rgba(51, 255, 0, 0.05); }
+        
+        .s-group { display: flex; flex-direction: column; }
+        .s-label { font-size: 0.8em; color: #888; text-transform: uppercase; }
+        .s-val { font-size: 1em; color: #33ff00; font-weight: bold; }
+        .s-cost { font-family: 'Courier New'; color: #d4af37; font-weight: bold; }
 
-        .tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #1a5c00; }
-        .tab-btn {
-            background: #001000;
+        /* NAVIGATION (STEPPER) */
+        .stepper { display: flex; background: #000; border-bottom: 1px solid #1a5c00; }
+        .step-btn {
+            flex: 1;
+            padding: 12px 5px;
+            background: transparent;
+            border: none;
             color: #1a5c00;
-            border: 1px solid #1a5c00;
-            border-bottom: none;
-            padding: 10px 20px;
+            border-bottom: 3px solid transparent;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
+            font-size: 0.9em;
+            transition: 0.3s;
         }
-        .tab-btn.active {
-            background: #1a5c00;
-            color: #33ff00;
-            border-color: #33ff00;
-            padding-bottom: 12px;
-            margin-bottom: -1px;
-        }
-        .tab-content { display: none; height: 100%; overflow-y: auto; }
-        .tab-content.active { display: block; }
+        .step-btn:hover { color: #33ff00; background: #001100; }
+        .step-btn.active { color: #33ff00; border-bottom-color: #33ff00; background: rgba(51, 255, 0, 0.1); }
 
-        .stat-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 8px 0; border-bottom: 1px dotted #1a5c00; 
-        }
-        .ctrl-btn {
-            background: black; color: #33ff00; border: 1px solid #33ff00;
-            width: 25px; height: 25px; cursor: pointer;
-        }
-        .ctrl-btn:hover { background: #33ff00; color: black; }
+        /* CONTENU ONGLETS */
+        .tab-content { display: none; padding: 20px; overflow-y: auto; height: 100%; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
         
-        .inv-item { 
-            border: 1px solid #1a5c00; padding: 5px; margin-bottom: 5px; 
-            display: flex; justify-content: space-between; 
-            background: rgba(0,0,0,0.5);
+        /* CARD SÉLECTION */
+        .select-card {
+            border: 1px solid #1a5c00;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .select-card:hover { border-color: #33ff00; background: #001a00; }
+        .select-card.selected { border-color: #d4af37; background: #1a1a00; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
 
-        /* BOUTONS DE FILTRE ARMURERIE */
-        .gear-filters { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
-        .gear-cat-btn {
-            background: black; border: 1px solid #1a5c00; color: #1a5c00;
-            padding: 5px 10px; font-size: 0.8em; cursor: pointer; flex-grow: 1;
-            font-family: 'Courier New', monospace; font-weight: bold;
-        }
-        .gear-cat-btn.active { background: #1a5c00; color: #33ff00; border-color: #33ff00; }
-        .gear-cat-btn:hover { border-color: #33ff00; color: #33ff00; }
+        /* STATS LIGNES */
+        .stat-line { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dotted #333; }
+        .ctrl-btn { background: #000; border: 1px solid #33ff00; color: #33ff00; width: 25px; cursor: pointer; }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="hud-screen">
@@ -128,122 +117,165 @@
         <a href="codex.html">CODEX</a>
     </nav>
 
-    <div class="screen-content">
-        <div class="container">
+    <div class="builder-layout">
+        
+        <div class="workspace">
+            <div class="stepper">
+                <button class="step-btn active" onclick="goToStep(1)">1. ARCHÉTYPE</button>
+                <button class="step-btn" onclick="goToStep(2)">2. ATTRIBUTS</button>
+                <button class="step-btn" onclick="goToStep(3)">3. COMPÉTENCES</button>
+                <button class="step-btn" onclick="goToStep(4)">4. TALENTS</button>
+                <button class="step-btn" onclick="goToStep(5)">5. ASCENSION</button>
+                <button class="step-btn" onclick="goToStep(6)">6. ARMURERIE</button>
+                <button class="step-btn" onclick="goToStep(7)">7. SAUVEGARDE</button>
+            </div>
 
-            <div id="phase-1" class="phase-container active">
-                <div class="top-hud-bar">
-                    <div style="text-align:center; width:100%; border: 1px solid #33ff00; background: rgba(51, 255, 0, 0.1);">
-                        <span style="font-size: 1.5em; font-weight:bold;">INITIALISATION DU PROTOCOLE GÉNÉTIQUE</span>
+            <div id="step-1" class="tab-content active">
+                <h3 style="color:#d4af37;">CONFIGURATION DE LA MISSION</h3>
+                <div style="background:#000; padding:15px; border:1px solid #1a5c00; margin-bottom:20px;">
+                    <label>Niveau de Campagne (Tier) :</label>
+                    <select id="campaign-tier" onchange="updateConfig()" style="background:#001a00; color:#33ff00; border:1px solid #1a5c00; margin-left:10px;">
+                        <option value="1">Tier 1 - Survivants (100 XP)</option>
+                        <option value="2">Tier 2 - Vétérans (200 XP)</option>
+                        <option value="3">Tier 3 - Héros (300 XP)</option>
+                        <option value="4">Tier 4 - Légendes (400 XP)</option>
+                    </select>
+                </div>
+
+                <h3 style="color:#d4af37;">PROTOCOLE DE RECRUTEMENT</h3>
+                <p style="color:#888;">Sélectionnez une faction pour afficher les profils disponibles.</p>
+                <div class="gear-filters" style="margin-bottom:15px;">
+                    <button class="gear-cat-btn" onclick="loadArchetypes('imperium')">IMPERIUM</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('chaos')">CHAOS</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('aeldari')">AELDARI</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('orks')">ORKS</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('tau')">T'AU</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('scum')">MARGINAUX</button>
+                    <button class="gear-cat-btn" onclick="loadArchetypes('tyranids')">TYRANIDES</button>
+                </div>
+                <div id="archetype-list"></div>
+            </div>
+
+            <div id="step-2" class="tab-content">
+                <h3 style="color:#d4af37;">ATTRIBUTS PRIMAIRES</h3>
+                <div id="attrs-container"></div>
+            </div>
+
+            <div id="step-3" class="tab-content">
+                <h3 style="color:#d4af37;">COMPÉTENCES</h3>
+                <div id="skills-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;"></div>
+            </div>
+
+            <div id="step-4" class="tab-content">
+                <div style="display:flex; gap:20px; height:100%;">
+                    <div style="flex:1;">
+                        <h4 style="color:#d4af37;">BASE DE DONNÉES</h4>
+                        <input type="text" id="talent-search" placeholder="Rechercher Talent/Pouvoir..." onkeyup="renderTalents()" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:10px;">
+                        <div id="talents-source-list" style="height:400px; overflow-y:auto;"></div>
+                    </div>
+                    <div style="flex:1; border-left:1px solid #1a5c00; padding-left:10px;">
+                        <h4 style="color:#33ff00;">ACQUISITIONS</h4>
+                        <div id="talents-owned-list"></div>
                     </div>
                 </div>
-                <p style="text-align:center; color:#888;">Sélectionnez l'allégeance principale de l'agent.</p>
+            </div>
 
-                <div class="grid">
-                    <div class="sub-faction-card" onclick="goToPhase2('imperium')"> <div class="sub-faction-icon">✠</div> <h3>IMPERIUM</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('chaos')"> <div class="sub-faction-icon">☠</div> <h3>CHAOS</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('aeldari')"> <div class="sub-faction-icon">👁</div> <h3>AELDARI</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('orks')"> <div class="sub-faction-icon">V</div> <h3>ORKS</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('tau')"> <div class="sub-faction-icon">◎</div> <h3>EMPIRE T'AU</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('necrons')"> <div class="sub-faction-icon">💀</div> <h3>NECRONS</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('scum')"> <div class="sub-faction-icon">⛓</div> <h3>MARGINAUX</h3> </div>
-                    <div class="sub-faction-card" onclick="goToPhase2('tyranids')"> <div class="sub-faction-icon">🐜</div> <h3>TYRANIDES</h3> </div>
+            <div id="step-5" class="tab-content">
+                <h3 style="color:#d4af37;">FORFAITS D'ASCENSION</h3>
+                <p style="color:#aaa;">Choisissez comment votre personnage évolue.</p>
+                <div id="ascension-list"></div>
+            </div>
+
+            <div id="step-6" class="tab-content">
+                <h3 style="color:#d4af37;">LOGISTIQUE</h3>
+                <div class="gear-filters">
+                    <button class="gear-cat-btn active" onclick="filterGear('ALL', this)">TOUT</button>
+                    <button class="gear-cat-btn" onclick="filterGear('MELEE', this)">MÊLÉE</button>
+                    <button class="gear-cat-btn" onclick="filterGear('RANGED', this)">DISTANCE</button>
+                    <button class="gear-cat-btn" onclick="filterGear('ARMOR', this)">ARMURES</button>
+                    <button class="gear-cat-btn" onclick="filterGear('GEAR', this)">MATÉRIEL</button>
+                </div>
+                <div style="display:flex; gap:20px; height:60vh; margin-top:10px;">
+                    <div id="gear-list" style="flex:1; overflow-y:auto; border:1px solid #1a5c00; padding:10px;"></div>
+                    <div style="flex:1; border:1px solid #1a5c00; padding:10px;">
+                        <h4>INVENTAIRE</h4>
+                        <div id="inventory-list"></div>
+                    </div>
                 </div>
             </div>
 
-            <div id="phase-2" class="phase-container">
-                <button class="btn-tactical" onclick="goToPhase1()"> &lt; RETOUR FACTIONS</button>
-                <h2 id="faction-title" style="color:#d4af37; border-bottom:2px solid #d4af37; margin-top:10px;">TITRE FACTION</h2>
-                <div id="archetype-list" class="arch-list-container"></div>
-            </div>
-
-            <div id="phase-3" class="phase-container">
-                <button class="btn-tactical" onclick="goToPhase2(currentFactionKey)"> &lt; CHANGER ARCHÉTYPE</button>
+            <div id="step-7" class="tab-content">
+                <h3 style="color:#d4af37;">ENREGISTREMENT</h3>
+                <label>Nom de l'Agent :</label>
+                <input type="text" id="char-name-input" oninput="updateName()" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:20px;">
                 
-                <div class="builder-layout">
-                    <div class="sidebar">
-                        <h3 style="color:#33ff00; border-bottom:1px solid #33ff00;">IDENTITÉ</h3>
-                        <div style="margin-bottom:15px;">
-                            <label>Nom :</label>
-                            <input type="text" id="char-name" value="Nouvel Agent" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00;">
-                        </div>
-                        <div><strong>Archétype:</strong> <span id="summ-arch" style="color:#d4af37;">-</span></div>
-                        <div><strong>Tier:</strong> <span id="summ-tier">-</span></div>
-                        <div style="font-size:0.8em; color:#aaa; margin-top:5px;"><strong>Mots-Clés:</strong><br><span id="summ-keywords">-</span></div>
-
-                        <h3 style="color:#33ff00; border-bottom:1px solid #33ff00; margin-top:20px;">STATS DÉRIVÉES</h3>
-                        <div class="stat-row"><span>PV (Wounds)</span> <span id="d-wounds" class="highlight">0</span></div>
-                        <div class="stat-row"><span>Choc (Shock)</span> <span id="d-shock" class="highlight">0</span></div>
-                        <div class="stat-row"><span>Défense</span> <span id="d-def" class="highlight">0</span></div>
-                        <div class="stat-row"><span>Résilience</span> <span id="d-res" class="highlight">0</span></div>
-                        <div class="stat-row"><span>Influence</span> <span id="d-inf" class="highlight">0</span></div>
-                        <div class="stat-row"><span>Richesse</span> <span id="d-wealth" class="highlight">0</span></div>
-                    </div>
-
-                    <div class="main-view">
-                        <div class="xp-header">
-                            <span>CAPACITÉ D'EXPÉRIENCE</span>
-                            <span style="font-size:1.4em;">
-                                <span id="xp-spent" style="color:#33ff00;">0</span> / <span id="xp-max" style="color:#d4af37;">0</span> XP
-                            </span>
-                        </div>
-
-                        <div class="tabs">
-                            <button class="tab-btn active" onclick="showTab('tab-attrs', this)">ATTRIBUTS</button>
-                            <button class="tab-btn" onclick="showTab('tab-skills', this)">COMPÉTENCES</button>
-                            <button class="tab-btn" onclick="showTab('tab-gear', this)">ARSENAL</button>
-                            <button class="tab-btn" onclick="showTab('tab-export', this)">DONNÉES</button>
-                        </div>
-
-                        <div id="tab-attrs" class="tab-content active">
-                            <h3>ATTRIBUTS PRIMAIRES</h3>
-                            <div id="attrs-container"></div>
-                        </div>
-
-                        <div id="tab-skills" class="tab-content">
-                            <h3>COMPÉTENCES</h3>
-                            <div id="skills-container" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;"></div>
-                        </div>
-
-                        <div id="tab-gear" class="tab-content">
-                            <div style="display:flex; gap:20px; height:100%;">
-                                <div style="flex:1; border-right:1px solid #1a5c00; padding-right:10px;">
-                                    <h4 style="color:#d4af37;">LOGISTIQUE DISPONIBLE</h4>
-                                    
-                                    <div class="gear-filters">
-                                        <button class="gear-cat-btn active" onclick="filterGear('ALL', this)">TOUT</button>
-                                        <button class="gear-cat-btn" onclick="filterGear('MELEE', this)">MÊLÉE</button>
-                                        <button class="gear-cat-btn" onclick="filterGear('RANGED', this)">DISTANCE</button>
-                                        <button class="gear-cat-btn" onclick="filterGear('ARMOR', this)">ARMURES</button>
-                                        <button class="gear-cat-btn" onclick="filterGear('GEAR', this)">MATÉRIEL</button>
-                                        <button class="gear-cat-btn" onclick="filterGear('CYBER', this)">CYBER</button>
-                                    </div>
-
-                                    <input type="text" id="gear-search" placeholder="Rechercher..." onkeyup="renderGearList()" style="width:100%; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:10px;">
-                                    <div id="gear-list" style="height:300px; overflow-y:auto;"></div>
-                                </div>
-                                <div style="flex:1; padding-left:10px;">
-                                    <h4 style="color:#33ff00;">INVENTAIRE</h4>
-                                    <div id="inventory-list"></div>
-                                </div>
-                            </div>
-                        </div>
-
-<div id="tab-export" class="tab-content">
-    <h3>CODE NOOSPHÉRIQUE</h3>
-    <p style="color:#888; font-size:0.9em;">Sauvegardez ce fichier pour recharger votre agent plus tard.</p>
-    
-    <textarea id="json-export" style="width:100%; height:200px; background:black; color:#33ff00; border:1px solid #1a5c00; margin-bottom:10px; font-family:monospace;"></textarea>
-    
-    <div style="display:flex; gap:10px;">
-        <button class="btn-tactical" onclick="exportData()" style="flex:1;">ACTUALISER LE CODE</button>
-        <button class="btn-tactical" onclick="downloadFile()" style="flex:1; border-color:#d4af37; color:#d4af37;">TÉLÉCHARGER FICHIER .JSON</button>
-    </div>
-</div>
-                        </div>
-                    </div>
+                <textarea id="json-export" style="width:100%; height:200px; background:black; color:#33ff00; border:1px solid #1a5c00; font-family:monospace;"></textarea>
+                
+                <div style="margin-top:20px; display:flex; gap:10px;">
+                    <button class="btn-tactical" onclick="exportData()">GÉNÉRER LE CODE</button>
+                    <button class="btn-tactical" onclick="downloadFile()" style="border-color:#d4af37; color:#d4af37;">TÉLÉCHARGER FICHIER .JSON</button>
                 </div>
             </div>
+        </div>
+
+        <div class="sidebar-summary">
+            <div class="summary-header">
+                <span style="font-size:0.8em; color:#aaa;">EXPÉRIENCE TOTALE</span>
+                <span class="xp-big">
+                    <span id="xp-spent">0</span> / <span id="xp-max">100</span> XP
+                </span>
+            </div>
+
+            <ul class="summary-list">
+                <li class="summary-item">
+                    <div class="s-group">
+                        <span class="s-val" id="summ-arch">Inconnu</span>
+                        <span class="s-label">Archétype</span>
+                    </div>
+                    <span class="s-cost" id="cost-arch">0 XP</span>
+                </li>
+
+                <li class="summary-item">
+                    <div class="s-group">
+                        <span class="s-val" id="summ-ascension">Aucune</span>
+                        <span class="s-label">Forfait Ascension</span>
+                    </div>
+                    <span class="s-cost" id="cost-ascension">0 XP</span>
+                </li>
+
+                <li class="summary-item">
+                    <div class="s-group">
+                        <span class="s-val">Attributs & Carac.</span>
+                        <span class="s-label">Statistiques</span>
+                    </div>
+                    <span class="s-cost" id="cost-attr">0 XP</span>
+                </li>
+
+                <li class="summary-item">
+                    <div class="s-group">
+                        <span class="s-val">Compétences</span>
+                        <span class="s-label">Savoir-faire</span>
+                    </div>
+                    <span class="s-cost" id="cost-skill">0 XP</span>
+                </li>
+
+                <li class="summary-item">
+                    <div class="s-group">
+                        <span class="s-val" id="summ-talent-count">0 appris</span>
+                        <span class="s-label">Talents & Pouvoirs</span>
+                    </div>
+                    <span class="s-cost" id="cost-talent">0 XP</span>
+                </li>
+
+                <li class="summary-item" style="display:block; background:rgba(0,0,0,0.8); border-top:2px solid #1a5c00;">
+                    <div class="stat-line"><span>PV (Wounds)</span> <span class="s-val" id="d-wounds">0</span></div>
+                    <div class="stat-line"><span>Choc (Shock)</span> <span class="s-val" id="d-shock">0</span></div>
+                    <div class="stat-line"><span>Défense</span> <span class="s-val" id="d-def">0</span></div>
+                    <div class="stat-line"><span>Résilience</span> <span class="s-val" id="d-res">0</span></div>
+                    <div class="stat-line"><span>Influence</span> <span class="s-val" id="d-inf">0</span></div>
+                    <div class="stat-line"><span>Richesse</span> <span class="s-val" id="d-wealth">0</span></div>
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -251,291 +283,448 @@
     <script src="armory-script.js"></script>
 
     <script>
-    const attributesList = ["Force", "Endurance", "Agilité", "Initiative", "Volonté", "Intellect", "Sociabilité"];
-    const skillsList = ["Athlétisme", "Vigilance", "Tir", "Corps à corps", "Furtivité", "Pilotage", "Tech", "Medicae", "Commandement", "Investigation", "Persuasion", "Survie"];
-    const xpAttrCosts = [0, 0, 4, 10, 20, 35, 55, 80, 110, 145, 185, 230, 280];
-    const xpSkillCosts = [0, 0, 2, 6, 12, 20, 30, 42, 56];
+        // --- DONNÉES INTERNES (POUR QUE ÇA MARCHE TOUT DE SUITE) ---
+        // Liste simplifiée des Talents et Ascensions pour l'exemple
+// --- BASE DE DONNÉES DES TALENTS (COMPLÈTE) ---
+        // --- BASE DE DONNÉES DES TALENTS (SOURCE : CORE RULEBOOK v2.1) ---
+        const talentData = [
+            // === OFFICIEL - GÉNÉRAL & PHYSIQUE ===
+            { id: "ambidextrous", name: "Ambidextre", cost: 20, desc: "Ignorez le malus de +2 ND pour l'usage de la main non directrice." },
+            { id: "augmetic", name: "Augmétique", cost: 20, desc: "Vous avez une prothèse. +1 Dés de Résilience." },
+            { id: "blind_fighter", name: "Combat Aveugle", cost: 20, desc: "Ignorez les malus de visibilité en mêlée." },
+            { id: "die_hard", name: "Dur à Cuire", cost: 20, desc: "Ignorez les malus de Blessure. Ne mourez pas à 0 Blessures traumatiques." },
+            { id: "disturbing_voice", name: "Voix Perturbante", cost: 10, desc: "+2 dés en Intimidation, mais -2 en Persuasion/Tromperie." },
+            { id: "furious_charge", name: "Charge Furieuse", cost: 20, desc: "Si vous Chargez, ajoutez +1 dé d'Attaque et ne subissez pas de malus." },
+            { id: "hardy", name: "Robuste", cost: 10, desc: "Soignez 1 Blessure de plus lors d'un Repos." },
+            { id: "iron_jaw", name: "Mâchoire d'Acier", cost: 20, desc: "Réussissez un test d'Endurance pour ne pas être Assommé/Mis à terre." },
+            { id: "silent", name: "Silencieux", cost: 20, desc: "+2 dés aux tests de Furtivité." },
+            { id: "tenacious", name: "Tenace", cost: 20, desc: "+1 Défense si vous ne bougez pas. Immunisé à la Poussée." },
 
-    let currentFactionKey = "";
-    let currentGearCat = "ALL"; 
-    let charSheet = {
-        archetypeId: null, tier: 1, xpSpent: 0,
-        attributes: {}, skills: {}, inventory: [], keywords: []
-    };
+            // === OFFICIEL - COMBAT & TIR ===
+            { id: "blademaster", name: "Maître Lame", cost: 30, desc: "Relancez 1 dé d'Attaque raté en mêlée. +1 Défense au contact." },
+            { id: "counter_attack", name: "Contre-Attaque", cost: 20, desc: "Attaquez gratuitement (réaction) après une Parade réussie (sauf si Tirs)." },
+            { id: "deadshot", name: "Tireur d'Élite (Deadshot)", cost: 20, desc: "Doublez le bonus de visée (+2 dés) si vous ne faites que viser et tirer." },
+            { id: "dual_wielder", name: "Combat à deux armes", cost: 20, desc: "Réduit le malus d'attaque double à +2 ND. Permet Tir+Mêlée." },
+            { id: "eliminator", name: "Éliminateur", cost: 20, desc: "Ignorez le malus pour tirer dans une mêlée ou sur une cible engagée." },
+            { id: "gunslinger", name: "Pistolero", cost: 20, desc: "Pas de malus pour tirer avec deux pistolets. Rechargez gratuitement." },
+            { id: "hunter", name: "Chasseur", cost: 10, desc: "+2 dés de Survie pour pister. Réduit le malus de tir à longue portée." },
+            { id: "marksman", name: "Tireur Précis (Marksman)", cost: 30, desc: "Relancez 1 dé de Tir raté. Ignorez le malus de portée Longue." },
+            { id: "storm_bullet", name: "Tempête de Balles", cost: 20, desc: "Décalez votre Tir Rapide ou Salve pour toucher une 2ème cible proche." },
 
-    attributesList.forEach(a => charSheet.attributes[a] = 1);
-    skillsList.forEach(s => charSheet.skills[s] = 0);
+            // === OFFICIEL - SOCIAL & MENTAL ===
+            { id: "command_presence", name: "Présence de Commandement", cost: 20, desc: "Vos alliés peuvent utiliser votre Volonté pour résister à la Peur." },
+            { id: "deductive", name: "Esprit Déductif", cost: 20, desc: "+2 dés pour analyser des preuves. Le MJ donne un indice gratuit." },
+            { id: "fearless", name: "Sans Peur", cost: 30, desc: "Immunité totale à la condition Peur." },
+            { id: "inf_knowledge", name: "Connaissance Infuse", cost: 20, desc: "Vous pouvez tenter n'importe quel test de Connaissance (Lore) même sans compétence." },
+            { id: "noble_peer", name: "Noblesse", cost: 20, desc: "+2 Influence. +2 dés aux tests sociaux avec l'Imperium/Noblesse." },
+            { id: "scum_savvy", name: "Connaissance de la Rue", cost: 10, desc: "+2 dés pour trouver des objets illégaux ou interagir avec la pègre." },
+            { id: "tech_savvy", name: "Expert Technique", cost: 20, desc: "Réduit de moitié le temps des tests Tech. +1 dé pour interagir avec les Esprits de la Machine." },
 
-    function showPhase(id) {
-        document.querySelectorAll('.phase-container').forEach(el => el.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
+            // === OFFICIEL - FOI & FACTION ===
+            { id: "abhor_witch", name: "Abhorrez le Sorcier", cost: 20, desc: "(KHORNE / IMPERIUM) +2 dés de Volonté pour résister aux sorts." },
+            { id: "rite_banishment", name: "Rite de Bannissement", cost: 20, desc: "(MINISTORUM) Action complète pour bannir un Démon (Test Volonté vs Volonté)." },
+            { id: "more_dakka", name: "Pluss' de Dakka !", cost: 20, desc: "(ORK) Si vous ratez un tir, vous gagnez +1 dé à la prochaine attaque." },
+            { id: "aspect_shrine", name: "Guerrier Aspect", cost: 20, desc: "(AELDARI) +1 Attaque avec l'arme de votre Temple." },
+            { id: "touched_fate", name: "Touché par le Destin", cost: 20, desc: "Gagnez +1 Gloire max. Vous pouvez dépenser la Gloire après le jet." },
 
-    function goToPhase2(fKey) {
-        currentFactionKey = fKey;
-        let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
-        
-        if (!data) { alert("Erreur : Aucun script de données (races-script.js) n'est chargé."); return; }
-        
-        const faction = data[fKey];
-        if(!faction) return;
+            // === NON-OFFICIEL (REQUIS POUR TYRANIDES/NÉCRONS/ETC) ===
+            { id: "synapse", name: "Créature Synapse", cost: 30, desc: "(TYRANIDE) Immunise les petits Tyranides proches à la Peur." },
+            { id: "reanimation", name: "Protocoles de Réanimation", cost: 40, desc: "(NÉCRON) Testez pour revenir à la vie après être tombé à 0 PV." },
+            { id: "greater_good", name: "Pour le Bien Suprême", cost: 15, desc: "(T'AU) +1 dé si vous aidez un allié (Action d'Aide)." }
+        ];
 
-        document.getElementById('faction-title').innerText = faction.title;
-        const list = document.getElementById('archetype-list');
-        list.innerHTML = "";
-        const sorted = [...faction.units].sort((a,b) => a.tier - b.tier);
+// --- BASE DE DONNÉES DES ASCENSIONS (SOURCE : CORE RULEBOOK v2.1) ---
+        const ascensionData = [
+            // === PACKAGES OFFICIELS ===
+            { id: "stay_course", name: "Rester sur sa Voie", cost: 0, desc: "Aucun changement d'Archétype. Gain: +1 Influence, +2 Richesse, 1 Arme Rare." },
+            { id: "psychic_revelation", name: "Révélation Psychique", cost: 10, desc: "Éveil latent. Gain: Mot-clé PSYKER, 1 Pouvoir Mineur, +1 Corruption." },
+            { id: "commissarial", name: "Agent Politique (Commissarial)", cost: 15, desc: "Détaché politique. Gain: Mot-clé OFFICIO PREFECTUS, +1 Intimidation, +1 Influence." },
+            { id: "dauntless_rep", name: "Réputation Intrépide", cost: 10, desc: "Une légende vivante. Gain: +1 Influence, Talent 'Sans Peur' (Fearless)." },
+            { id: "demanding_patron", name: "Mécène Exigeant", cost: 10, desc: "Soutien puissant mais strict. Gain: +2 Richesse, 1 Arme Très Rare, une Mission." },
+            { id: "perfidious_wretch", name: "Félon (Perfidious Wretch)", cost: 10, desc: "(SCUM/CHAOS) Vous avez trahi. Gain: +2 Tromperie, Talent 'Combattant Sournois'." },
+            { id: "wargear_acq", name: "Privilège Logistique", cost: 10, desc: "Accès à l'armurerie. Gain: 3 Objets Rares OU 1 Objet Très Rare." },
+            { id: "genetic_mod", name: "Modification Génétique", cost: 15, desc: "Amélioration physique. Gain: +1 à un Attribut physique (Max +1 au-dessus du Tier)." },
+            { id: "memetic_implant", name: "Implant Mémétique", cost: 20, desc: "Savoir gravé. Gain: +1 à un Attribut mental (Max +1 au-dessus du Tier)." },
+            
+            // === EXTENSIONS (POUR COMPLÉTER) ===
+            { id: "ascend_tier", name: "Ascension de Tier (Standard)", cost: 10, desc: "Mécanique standard pour passer au Tier supérieur. Coût par Tier franchi." },
+            { id: "dark_pact", name: "Pacte Sombre", cost: 15, desc: "(CHAOS) Allégeance aux Dieux. Gain: Marque du Chaos, Talent Interdit." },
+            { id: "xenos_tech", name: "Marché Noir Xenos", cost: 15, desc: "Armement interdit. Gain: 1 Arme Xenos (T'au/Aeldari) de rareté Très Rare." },
+            // === CORE RULES (LIVRE DE BASE) ===
+            { id: "stay_course", name: "Rester sur sa Voie", cost: 0, desc: "Aucun changement. +1 Influence, +2 Richesse, 1 Arme Rare." },
+            { id: "psychic_rev", name: "Révélation Psychique", cost: 10, desc: "Éveil latent. Gain: Mot-clé PSYKER, 1 Pouvoir Mineur." },
+            { id: "genetic_mod", name: "Modification Génétique", cost: 15, desc: "+1 à un Attribut Physique (Force, Endu, Agi)." },
+            { id: "memetic", name: "Implant Mémétique", cost: 20, desc: "+1 à un Attribut Mental (Int, Vol, Soc)." },
+            { id: "augmetic", name: "Augmétique", cost: 20, desc: "Corps bionique. Gagnez 2 implants de rareté Rare." },
+            { id: "connections", name: "Relations Influentes", cost: 10, desc: "+2 Influence et un Talent Social (ex: Noblesse)." },
+            { id: "wargear", name: "Privilège Logistique", cost: 10, desc: "Accès armurerie. 3 Objets Rares ou 1 Très Rare." },
 
-        sorted.forEach(u => {
-            let color = u.tier >= 3 ? "#d4af37" : "#33ff00"; 
-            if (u.tier >= 5) color = "#ff3333";
-            list.innerHTML += `
-            <div class="arch-card" onclick="initBuilder('${u.id}')">
-                <span class="arch-tier-badge" style="background:${color}; color:black;">T${u.tier}</span>
-                <h3 style="color:#d4af37; margin-top:10px;">${u.name}</h3>
-                <p style="color:#aaa; font-size:0.9em;">${u.desc}</p>
-                <div style="margin-top:10px; color:#33ff00; font-size:0.8em; text-align:right;">[ SÉLECTIONNER ]</div>
-            </div>`;
-        });
-        showPhase('phase-2');
-    }
+            // === FORSAKEN SYSTEM (SCUM & CRIMINELS) ===
+            { id: "crimelord", name: "Seigneur du Crime", cost: 15, desc: "(SCUM) Vous dirigez un gang. +2 Richesse, +1 Influence, et des sous-fifres." },
+            { id: "cold_trader", name: "Marchand Froid (Cold Trader)", cost: 15, desc: "Trafiquant d'objets Xenos. Accès aux objets Aeldari/T'au sans malus." },
+            { id: "bounty_veteran", name: "Vétéran de la Traque", cost: 20, desc: "Chasseur de primes d'élite. +2 dés en Survie et Investigation." },
+            { id: "heretical_pact", name: "Pacte Hérétique", cost: 10, desc: "(CHAOS/SCUM) Alliance secrète. +1 Corruption, +1 Talent Interdit." },
 
-    function goToPhase1() { showPhase('phase-1'); }
+            // === REDACTED RECORDS (HULKS & RELIQUES) ===
+            { id: "hulk_breaker", name: "Briseur de Hulk", cost: 20, desc: "Expert des Space Hulks. +2 dés pour résister à la Peur et aux Radiations." },
+            { id: "relic_bearer", name: "Porteur de Relique", cost: 20, desc: "(MINISTORUM/ASTARTES) On vous confie un artefact sacré (Arme Unique)." },
+            { id: "sanctified", name: "Sanctifié", cost: 30, desc: "Vous êtes touché par l'Empereur. Gagnez 1 point de Foi (Faith) permanent." },
+            { id: "machine_communion", name: "Communion Machine", cost: 20, desc: "(AD-MECH) Interface directe. +2 Tech, vous pouvez parler aux machines." },
 
-    // --- FONCTION DE CORRECTION DES MOTS-CLÉS ---
-    function getCorrectKeyword(factionKey) {
-        const mapping = {
-            "ORKS": "ORK",          // "ORKS" devient "ORK" pour l'armurerie
-            "TAU": "T'AU",          // "TAU" devient "T'AU"
-            "AELDARI": "AELDARI",
-            "NECRONS": "NECRONS",
-            "IMPERIUM": "IMPERIUM",
-            "CHAOS": "CHAOS",
-            "SCUM": "SCUM",
-            "TYRANIDS": "TYRANIDS"
+            // === CHURCH OF STEEL (VÉHICULES) ===
+            { id: "tank_ace", name: "As des Blindés", cost: 25, desc: "Expert en pilotage. Votre véhicule gagne +1 Manœuvrabilité et +1 Tir tant que vous pilotez." },
+            { id: "walker_veteran", name: "Vétéran Marcheur", cost: 20, desc: "Pilote de Sentinelle ou Dreadnought. Ignorez les malus de terrain difficile." },
+            { id: "speed_freak", name: "Fou d'la Vitesse", cost: 15, desc: "(ORK) Tant que vous allez vite, votre véhicule gagne +2 Défense." },
+            // --- BASE DE DONNÉES DES ASCENSIONS (HOMEBREW & APOCRYPHA) ---
+
+            // === CHAOS & DÉMONS ===
+            { id: "daemon_prince", name: "Prince Démon", cost: 60, desc: "(TIER 4+) L'apothéose ultime. Vous devenez Immortel, gagnez +4 à toutes les caractéristiques, mais perdez votre âme." },
+            { id: "dark_mechanicum", name: "Mécène du Dark Mechanicum", cost: 20, desc: "(CHAOS) Vous fusionnez chair et métal démon. +2 Tech, et une arme Démon-Forge." },
+            { id: "possession", name: "Possession Démoniaque", cost: 30, desc: "Vous partagez votre corps avec un Démon. +3 Force/Endurance, mais le MJ contrôle parfois vos actions." },
+
+            // === AELDARI (YNNARI & CORSAIRES) ===
+            { id: "ynnari_reborn", name: "La Voie de la Renaissance", cost: 20, desc: "(AELDARI) Vous servez Ynnead. Changez vos mots-clés en YNNARI. Gagnez la discipline 'Revenant'." },
+            { id: "corsair_prince", name: "Prince Corsaire", cost: 30, desc: "(AELDARI) Vous commandez un vaisseau. +4 Richesse, +2 Influence, et une suite de guerriers." },
+            { id: "exodite_bond", name: "Lien Exodite", cost: 15, desc: "(AELDARI) Vous liez votre âme à un Dragon (Monture). Combat monté sans malus." },
+
+            // === ORKS & XENOS ===
+            { id: "waaagh_boss", name: "Warboss", cost: 40, desc: "(ORK TIER 3+) Vous êtes le plus gros. +2 Taille, +2 Force, +2 PV. Vos alliés Orks ne fuient jamais." },
+            { id: "biomorph_apex", name: "Prédateur Apex", cost: 25, desc: "(TYRANIDE) Évolution forcée. Choisissez 3 Biomorphes (Armes/Armures naturelles) gratuits." },
+            { id: "necron_awakening", name: "Protocoles d'Éveil", cost: 20, desc: "(NECRON) Récupération de mémoire. +2 Intellect, +2 Initiative, et accès aux Techno-Arcanes." },
+            { id: "genestealer_kiss", name: "Baiser du Genestealer", cost: 15, desc: "Vous implantez un œuf. Créez un serviteur loyal (PNJ) qui grandira avec le temps." },
+
+            // === IMPERIUM (HAUT NIVEAU) ===
+            { id: "warrant_trade", name: "Lettre de Marque", cost: 50, desc: "(TIER 3+) Vous devenez Libre-Marchand (Rogue Trader). +5 Richesse, +5 Influence, Vaisseau Spatial." },
+            { id: "inquisitor_rosette", name: "Sceau de l'Inquisition", cost: 40, desc: "(TIER 3+) Vous devenez Inquisiteur de plein droit. Autorité absolue sur l'Imperium. +4 Influence." },
+            { id: "living_saint", name: "Sainte Vivante", cost: 60, desc: "(SORORITAS TIER 4) Vous ressuscitez par la volonté de l'Empereur. Vol (Ailes), Aura de Foi, +5 Volonté." },
+            { id: "officio_assassin", name: "Conditionnement Assassin", cost: 30, desc: "Temple Vindicare/Eversor. +3 Agilité, +3 Initiative, mais perte totale d'empathie (-3 Soc)." }
+        ];
+    
+        // --- CONFIGURATION XP ---
+        const xpAttrCosts = [0, 0, 4, 10, 20, 35, 55, 80, 110, 145, 185, 230, 280];
+        const xpSkillCosts = [0, 0, 2, 6, 12, 20, 30, 42, 56];
+        const attributesList = ["Force", "Endurance", "Agilité", "Initiative", "Volonté", "Intellect", "Sociabilité"];
+        const skillsList = ["Athlétisme", "Vigilance", "Tir", "Corps à corps", "Furtivité", "Pilotage", "Tech", "Medicae", "Commandement", "Investigation", "Persuasion", "Survie"];
+
+        // --- ÉTAT DU PERSONNAGE ---
+        let charSheet = {
+            name: "Nouvel Agent",
+            tier: 1,
+            archetype: null,
+            faction: "",
+            xpSpent: 0,
+            // Détails XP
+            xpArch: 0,
+            xpAttr: 0,
+            xpSkill: 0,
+            xpTalent: 0,
+            xpAscension: 0,
+            // Données
+            attributes: {},
+            skills: {},
+            talents: [],
+            ascension: null,
+            inventory: [],
+            keywords: []
         };
-        return mapping[factionKey] || factionKey;
-    }
 
-    function initBuilder(archId) {
-        let unitData = null;
-        let fKeyFound = "";
-        
-        let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
-        if (!data) return;
-
-        for(const [k, f] of Object.entries(data)) {
-            const u = f.units.find(x => x.id === archId);
-            if(u) { unitData = u; fKeyFound = k.toUpperCase(); break; }
-        }
-        if(!unitData) return;
-
-        // Reset Fiche
-        charSheet.archetypeId = archId;
-        charSheet.tier = unitData.tier;
-        charSheet.xpSpent = 0;
-        charSheet.inventory = [];
-        
-        // --- APPLICATION DES MOTS-CLÉS (CORRIGÉE) ---
-        // On ajoute la version corrigée pour l'armurerie (ex: ORK)
-        charSheet.keywords = [getCorrectKeyword(fKeyFound)];
-        
-        // On ajoute aussi la version brute pour être sûr (ex: ORKS)
-        if(fKeyFound !== getCorrectKeyword(fKeyFound)) {
-            charSheet.keywords.push(fKeyFound);
-        }
-
-        const sId = archId.toLowerCase();
-        if(sId.includes('marine') || sId.includes('tactical')) charSheet.keywords.push('ASTARTES', 'IMPERIUM');
-        if(sId.includes('sister')) charSheet.keywords.push('ADEPTA SORORITAS', 'IMPERIUM');
-        if(sId.includes('ork') || sId.includes('boy')) charSheet.keywords.push('ORK');
-        if(sId.includes('scum') || sId.includes('guard')) charSheet.keywords.push('IMPERIUM', 'SCUM');
-
+        // Init
         attributesList.forEach(a => charSheet.attributes[a] = 1);
         skillsList.forEach(s => charSheet.skills[s] = 0);
 
-        document.getElementById('summ-arch').innerText = unitData.name;
-        document.getElementById('summ-tier').innerText = unitData.tier;
-        document.getElementById('xp-max').innerText = unitData.tier * 100;
-        document.getElementById('summ-keywords').innerText = charSheet.keywords.join(", ");
+        // --- FONCTIONS DE NAVIGATION ---
+        function goToStep(stepNum) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + stepNum).classList.add('active');
+            document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.step-btn')[stepNum-1].classList.add('active');
+        }
 
-        renderAttributes();
-        renderSkills();
-        
-        // REFRESH TOTAL ARMURERIE
-        currentGearCat = 'ALL';
-        document.querySelectorAll('.gear-cat-btn').forEach(b => b.classList.remove('active'));
-        if(document.querySelector('.gear-cat-btn')) document.querySelector('.gear-cat-btn').classList.add('active');
-        renderGearList(); 
-        
-        calculateStats();
-        showPhase('phase-3');
-    }
+        function updateConfig() {
+            charSheet.tier = parseInt(document.getElementById('campaign-tier').value);
+            updateSummary();
+        }
 
-    function renderAttributes() {
-        const c = document.getElementById('attrs-container');
-        c.innerHTML = "";
-        attributesList.forEach(attr => {
-            c.innerHTML += `
-            <div class="stat-row">
-                <span style="width:100px;">${attr}</span>
-                <div>
-                    <button class="ctrl-btn" onclick="modAttr('${attr}', -1)">-</button>
-                    <span class="stat-val" style="display:inline-block; width:30px; text-align:center;">${charSheet.attributes[attr]}</span>
-                    <button class="ctrl-btn" onclick="modAttr('${attr}', 1)">+</button>
-                </div>
-            </div>`;
-        });
-    }
+        // --- 1. ARCHÉTYPES ---
+        function loadArchetypes(fKey) {
+            let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
+            if (!data || !data[fKey]) return;
 
-    function modAttr(attr, delta) {
-        const oldVal = charSheet.attributes[attr];
-        const newVal = oldVal + delta;
-        if(newVal < 1 || newVal > 12) return;
-        const cost = xpAttrCosts[newVal] - xpAttrCosts[oldVal];
-        if(charSheet.xpSpent + cost > charSheet.tier * 100) { alert("XP Insuffisant !"); return; }
-        charSheet.attributes[attr] = newVal;
-        charSheet.xpSpent += cost;
-        renderAttributes();
-        calculateStats();
-    }
+            const list = document.getElementById('archetype-list');
+            list.innerHTML = "";
+            charSheet.faction = data[fKey].title.split(':')[0]; // Ex: "IMPERIUM"
 
-    function renderSkills() {
-        const c = document.getElementById('skills-container');
-        c.innerHTML = "";
-        skillsList.forEach(s => {
-            c.innerHTML += `
-            <div class="stat-row">
-                <span>${s}</span>
-                <div>
-                    <button class="ctrl-btn" onclick="modSkill('${s}', -1)">-</button>
-                    <span class="stat-val" style="display:inline-block; width:30px; text-align:center;">${charSheet.skills[s]}</span>
-                    <button class="ctrl-btn" onclick="modSkill('${s}', 1)">+</button>
-                </div>
-            </div>`;
-        });
-    }
-
-    function modSkill(s, delta) {
-        const oldVal = charSheet.skills[s];
-        const newVal = oldVal + delta;
-        if(newVal < 0 || newVal > 8) return;
-        const cost = xpSkillCosts[newVal] - xpSkillCosts[oldVal];
-        if(charSheet.xpSpent + cost > charSheet.tier * 100) { alert("XP Insuffisant !"); return; }
-        charSheet.skills[s] = newVal;
-        charSheet.xpSpent += cost;
-        renderSkills();
-        calculateStats();
-    }
-
-    // --- FONCTION DE FILTRE PAR CATÉGORIE ---
-    function filterGear(cat, btn) {
-        currentGearCat = cat;
-        document.querySelectorAll('.gear-cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderGearList();
-    }
-
-    function renderGearList() {
-        if (typeof armoryData === 'undefined') { document.getElementById('gear-list').innerHTML = "Erreur: armory-script.js manquant."; return; }
-        
-        const search = document.getElementById('gear-search').value.toLowerCase();
-        const c = document.getElementById('gear-list');
-        c.innerHTML = "";
-
-        armoryData.forEach(item => {
-            const matchesSearch = item.name.toLowerCase().includes(search);
-            
-            // FILTRE CATÉGORIE
-            let matchesCat = false;
-            if (currentGearCat === 'ALL') matchesCat = true;
-            else if (item.type === currentGearCat) matchesCat = true;
-
-            // COMPATIBILITÉ (Mots-clés)
-            let compatible = false;
-            if(item.rarity === 'Commun') compatible = true;
-            if(item.keywords && item.keywords.some(k => charSheet.keywords.includes(k))) compatible = true;
-            if(charSheet.keywords.includes('IMPERIUM') && item.keywords.includes('ORK') && !charSheet.keywords.includes('SCUM')) compatible = false;
-
-            if(matchesSearch && matchesCat && compatible) {
-                c.innerHTML += `
-                <div class="inv-item" style="cursor:pointer;" onclick="addItem('${item.id}')">
+            data[fKey].units.forEach(u => {
+                list.innerHTML += `
+                <div class="select-card ${charSheet.archetype && charSheet.archetype.id === u.id ? 'selected' : ''}" onclick="selectArchetype('${u.id}', '${fKey}')">
                     <div>
-                        <strong style="color:#d4af37;">${item.name}</strong>
-                        <div style="font-size:0.7em; color:#aaa;">${item.type} | ${item.rarity}</div>
+                        <strong style="color:#d4af37;">${u.name}</strong> <span style="font-size:0.8em; color:#888;">(Tier ${u.tier})</span>
+                        <div style="font-size:0.8em; color:#aaa;">${u.desc}</div>
+                    </div>
+                    <div style="color:#33ff00;">SÉLECTIONNER</div>
+                </div>`;
+            });
+            updateSummary();
+        }
+
+        function selectArchetype(archId, fKey) {
+            let data = typeof factionData !== 'undefined' ? factionData : (typeof archetypeData !== 'undefined' ? archetypeData : null);
+            const u = data[fKey].units.find(x => x.id === archId);
+            
+            if(u) {
+                charSheet.archetype = u;
+                // Coût XP Archétype (Arbitraire pour l'instant, disons 0 ou un coût fixe si tu veux)
+                charSheet.xpArch = 0; 
+                
+                // Mots-clés
+                charSheet.keywords = [charSheet.faction];
+                if(archId.includes('marine')) charSheet.keywords.push('ASTARTES');
+                if(archId.includes('ork')) charSheet.keywords.push('ORK');
+
+                updateSummary();
+                loadArchetypes(fKey); // Re-render pour afficher la sélection
+            }
+        }
+
+        // --- 2. ATTRIBUTS & COMPÉTENCES ---
+        function renderAttributes() {
+            const c = document.getElementById('attrs-container');
+            c.innerHTML = "";
+            attributesList.forEach(attr => {
+                c.innerHTML += `
+                <div class="stat-line">
+                    <span style="width:100px;">${attr}</span>
+                    <div>
+                        <button class="ctrl-btn" onclick="modAttr('${attr}', -1)">-</button>
+                        <span style="display:inline-block; width:30px; text-align:center; font-weight:bold;">${charSheet.attributes[attr]}</span>
+                        <button class="ctrl-btn" onclick="modAttr('${attr}', 1)">+</button>
+                    </div>
+                </div>`;
+            });
+        }
+        function modAttr(attr, delta) {
+            const oldVal = charSheet.attributes[attr];
+            const newVal = oldVal + delta;
+            if(newVal < 1 || newVal > 12) return;
+            
+            const costDiff = xpAttrCosts[newVal] - xpAttrCosts[oldVal];
+            charSheet.attributes[attr] = newVal;
+            charSheet.xpAttr += costDiff;
+            
+            renderAttributes();
+            updateSummary();
+        }
+
+        function renderSkills() {
+            const c = document.getElementById('skills-container');
+            c.innerHTML = "";
+            skillsList.forEach(s => {
+                c.innerHTML += `
+                <div class="stat-line">
+                    <span style="font-size:0.9em;">${s}</span>
+                    <div>
+                        <button class="ctrl-btn" onclick="modSkill('${s}', -1)">-</button>
+                        <span style="display:inline-block; width:30px; text-align:center;">${charSheet.skills[s]}</span>
+                        <button class="ctrl-btn" onclick="modSkill('${s}', 1)">+</button>
+                    </div>
+                </div>`;
+            });
+        }
+        function modSkill(s, delta) {
+            const oldVal = charSheet.skills[s];
+            const newVal = oldVal + delta;
+            if(newVal < 0 || newVal > 8) return;
+
+            const costDiff = xpSkillCosts[newVal] - xpSkillCosts[oldVal];
+            charSheet.skills[s] = newVal;
+            charSheet.xpSkill += costDiff;
+            
+            renderSkills();
+            updateSummary();
+        }
+
+        // --- 3. TALENTS & POUVOIRS (NOUVEAU) ---
+        function renderTalents() {
+            const search = document.getElementById('talent-search').value.toLowerCase();
+            const list = document.getElementById('talents-source-list');
+            list.innerHTML = "";
+            
+            talentData.forEach(t => {
+                if(!t.name.toLowerCase().includes(search)) return;
+                list.innerHTML += `
+                <div class="select-card" onclick="addTalent('${t.id}')">
+                    <div>
+                        <strong style="color:#d4af37;">${t.name}</strong> <span style="font-size:0.8em; color:#888;">(${t.cost} XP)</span>
+                        <div style="font-size:0.8em;">${t.desc}</div>
                     </div>
                     <div style="color:#33ff00;">+</div>
                 </div>`;
-            }
-        });
-    }
+            });
+            renderTalentsOwned();
+        }
+        function addTalent(id) {
+            const t = talentData.find(x => x.id === id);
+            // Empêcher les doublons
+            if(charSheet.talents.find(x => x.id === id)) return;
+            
+            charSheet.talents.push(t);
+            charSheet.xpTalent += t.cost;
+            renderTalentsOwned();
+            updateSummary();
+        }
+        function renderTalentsOwned() {
+            const list = document.getElementById('talents-owned-list');
+            list.innerHTML = charSheet.talents.map((t, idx) => `
+                <div style="font-size:0.9em; padding:5px; border-bottom:1px solid #333;">
+                    ${t.name} <span style="color:red; cursor:pointer;" onclick="removeTalent(${idx})">[X]</span>
+                </div>
+            `).join('');
+        }
+        function removeTalent(idx) {
+            const t = charSheet.talents[idx];
+            charSheet.xpTalent -= t.cost;
+            charSheet.talents.splice(idx, 1);
+            renderTalentsOwned();
+            updateSummary();
+        }
 
-    function addItem(id) {
-        const item = armoryData.find(i => i.id === id);
-        charSheet.inventory.push(item);
-        renderInventory();
-    }
+        // --- 4. ASCENSION (NOUVEAU) ---
+        function renderAscensions() {
+            const list = document.getElementById('ascension-list');
+            list.innerHTML = "";
+            ascensionData.forEach(a => {
+                const isSelected = charSheet.ascension && charSheet.ascension.id === a.id;
+                list.innerHTML += `
+                <div class="select-card ${isSelected ? 'selected' : ''}" onclick="setAscension('${a.id}')">
+                    <div>
+                        <strong style="color:#d4af37;">${a.name}</strong>
+                        <div style="font-size:0.8em;">${a.desc}</div>
+                    </div>
+                    <div style="color:${isSelected ? '#d4af37' : '#33ff00'};">${isSelected ? 'CHOISI' : 'CHOISIR'}</div>
+                </div>`;
+            });
+        }
+        function setAscension(id) {
+            const a = ascensionData.find(x => x.id === id);
+            charSheet.ascension = a;
+            charSheet.xpAscension = a.cost; // Logique simple (à complexifier si besoin)
+            renderAscensions();
+            updateSummary();
+        }
 
-    function renderInventory() {
-        const c = document.getElementById('inventory-list');
-        c.innerHTML = charSheet.inventory.map((item, idx) => `
-            <div class="inv-item">
-                <span>${item.name}</span>
-                <span style="color:red; cursor:pointer;" onclick="remItem(${idx})">[X]</span>
-            </div>
-        `).join('');
-    }
+        // --- 5. ARMURERIE ---
+        let currentGearCat = 'ALL';
+        function filterGear(cat, btn) {
+            currentGearCat = cat;
+            document.querySelectorAll('.gear-cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderGearList();
+        }
+        function renderGearList() {
+            const list = document.getElementById('gear-list');
+            list.innerHTML = "";
+            if(typeof armoryData === 'undefined') return;
 
-    function remItem(idx) {
-        charSheet.inventory.splice(idx, 1);
-        renderInventory();
-    }
+            armoryData.forEach(item => {
+                if(currentGearCat !== 'ALL' && item.type !== currentGearCat) return;
+                // Filtre simple mot-clé
+                let compatible = true;
+                if(charSheet.keywords.includes("IMPERIUM") && item.keywords && item.keywords.includes("ORK")) compatible = false;
 
-    function calculateStats() {
-        document.getElementById('xp-spent').innerText = charSheet.xpSpent;
-        const T = charSheet.attributes["Endurance"];
-        const Tr = charSheet.tier;
-        document.getElementById('d-wounds').innerText = T + (Tr * 2);
-        document.getElementById('d-shock').innerText = charSheet.attributes["Volonté"] + Tr;
-        document.getElementById('d-def').innerText = Math.max(1, charSheet.attributes["Initiative"] - 1);
-        document.getElementById('d-res').innerText = T + 1; 
-        document.getElementById('d-inf').innerText = Math.max(1, charSheet.attributes["Sociabilité"] - 1);
-        document.getElementById('d-wealth').innerText = Tr;
-    }
+                if(compatible) {
+                    list.innerHTML += `
+                    <div style="border-bottom:1px solid #333; padding:5px; cursor:pointer;" onclick="addInv('${item.id}')">
+                        <div style="color:#d4af37;">${item.name}</div>
+                        <div style="font-size:0.7em; color:#888;">${item.type} | ${item.rarity}</div>
+                    </div>`;
+                }
+            });
+        }
+        function addInv(id) {
+            const item = armoryData.find(i => i.id === id);
+            charSheet.inventory.push(item);
+            updateInventory();
+            updateSummary();
+        }
+        function updateInventory() {
+            document.getElementById('inventory-list').innerHTML = charSheet.inventory.map((i, idx) => `
+                <div style="font-size:0.8em; padding:2px 0;">
+                    ${i.name} <span style="color:red; cursor:pointer;" onclick="remInv(${idx})">[x]</span>
+                </div>
+            `).join('');
+        }
+        function remInv(idx) {
+            charSheet.inventory.splice(idx, 1);
+            updateInventory();
+            updateSummary();
+        }
 
-    function showTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-    }
+        // --- 6. RÉSUMÉ & CALCULS (LE CERVEAU) ---
+        function updateSummary() {
+            // Calcul Total XP
+            charSheet.xpSpent = charSheet.xpArch + charSheet.xpAttr + charSheet.xpSkill + charSheet.xpTalent + charSheet.xpAscension;
+            
+            const maxXP = charSheet.tier * 100;
+            document.getElementById('xp-spent').innerText = charSheet.xpSpent;
+            document.getElementById('xp-max').innerText = maxXP;
+            document.getElementById('xp-spent').style.color = (charSheet.xpSpent > maxXP) ? "red" : "#d4af37";
 
-    function exportData() {
-        document.getElementById('json-export').value = JSON.stringify(charSheet, null, 4);
-    }
-    function exportData() {
-        // Met à jour le nom dans l'objet charSheet avant l'export
-        charSheet.name = document.getElementById('char-name').value || "Nouvel Agent";
-        
-        const json = JSON.stringify(charSheet, null, 4);
-        document.getElementById('json-export').value = json;
-    }
+            // Mise à jour Sidebar
+            document.getElementById('summ-arch').innerText = charSheet.archetype ? charSheet.archetype.name : "Non sélectionné";
+            document.getElementById('cost-arch').innerText = charSheet.xpArch + " XP";
 
-    function downloadFile() {
-        // 1. S'assurer que les données sont à jour
-        exportData();
-        
-        // 2. Créer le contenu du fichier
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(charSheet, null, 4));
-        const fileName = (charSheet.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()) + "_fiche.json";
-        
-        // 3. Créer un lien de téléchargement invisible et cliquer dessus
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", fileName);
-        document.body.appendChild(downloadAnchorNode); // Requis pour Firefox
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-    }
+            document.getElementById('summ-ascension').innerText = charSheet.ascension ? charSheet.ascension.name : "Aucune";
+            document.getElementById('cost-ascension').innerText = charSheet.xpAscension + " XP";
+
+            document.getElementById('cost-attr').innerText = charSheet.xpAttr + " XP";
+            document.getElementById('cost-skill').innerText = charSheet.xpSkill + " XP";
+            
+            document.getElementById('summ-talent-count').innerText = charSheet.talents.length + " appris";
+            document.getElementById('cost-talent').innerText = charSheet.xpTalent + " XP";
+
+            // Stats Dérivées
+            const T = charSheet.attributes["Endurance"];
+            const Wp = charSheet.attributes["Volonté"];
+            const I = charSheet.attributes["Initiative"];
+            const Fel = charSheet.attributes["Sociabilité"];
+            const Tr = charSheet.tier;
+
+            document.getElementById('d-wounds').innerText = T + (Tr * 2);
+            document.getElementById('d-shock').innerText = Wp + Tr;
+            document.getElementById('d-def').innerText = Math.max(1, I - 1);
+            document.getElementById('d-res').innerText = T + 1;
+            document.getElementById('d-inf').innerText = Math.max(1, Fel - 1);
+            document.getElementById('d-wealth').innerText = Tr;
+        }
+
+        function updateName() {
+            charSheet.name = document.getElementById('char-name-input').value;
+        }
+
+        function exportData() {
+            document.getElementById('json-export').value = JSON.stringify(charSheet, null, 4);
+        }
+        function downloadFile() {
+            exportData();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(charSheet, null, 4));
+            const fileName = (charSheet.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()) + ".json";
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", fileName);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        // --- INITIALISATION ---
+        window.onload = function() {
+            renderAttributes();
+            renderSkills();
+            renderTalents(); // Charge la liste de démo
+            renderAscensions();
+            renderGearList();
+            updateSummary();
+        };
     </script>
 </body>
 </html>
